@@ -1,0 +1,116 @@
+! version = 2.0
+
+// Some variables about the bot itself
+! var name = Aiden
+! var gender = male
+! var age = 5
+
+// This sets a local option to tell the parser what to do when we use a
+// ^Continue command to extend a line of code across multiple lines.
+// By default RiveScript just joins the lines together with no space in
+// between, so this makes RiveScript join them by spaces instead:
+! local concat = space
+
+// Number of times to persistently ask the same interview question before
+// giving up.
+! global interview_retry = 3
+> begin
+	+ request
+	* <get isGroupChat> == true => {ok}  // Don't do interview in group chats
+	* <get met> != true => <set met=true>{topic=interview1}{ok}
+	- {ok}
+< begin
+* <get met> != true => <set met=true>{topic=interview1}{ok}
+// Interview: ask the user their name.
+> topic interview1
+	+ *
+	- Hi there! My name is <bot name>. What's your name?
+	^ <set retry=0>{topic=interview2}
+< topic
+> topic interview_common
+	// User can say "continue" at any time to cancel out of the interview.
+	+ [*] (continue|cancel|stop|quit) [*]
+	- Okay, let's just chat then. What's up?{topic=random}
+
+	+ int abort
+	- Nevermind then. What's up?{topic=random}
+
+	+ int help *
+	- If you don't want to tell me your <star>, just type "continue".
+	- Or just type "continue" if you don't want to tell me your <star>.
+< topic
+// Interview: user responds with their name. Try 3 times to get their answer
+// before giving up.
+> topic interview2 includes interview_common
+	+ * *
+	* <get retry> > <env interview_retry> => {@int giveup}
+	- I only want your first name. {@int help}
+	- Just tell me your first name. {@int help}
+	- Can I just get your first name? {@int help}
+
+	+ *
+	- <set name=<formal>>Your name is <get name>? Cool! Are you a boy or a girl?
+	^ <set retry=0>{topic=interview3}
+
+	+ (my name is|call me|i am|im) *
+	@ <star2>
+
+	+ int giveup
+	- <set name=<id>>I'll just call you <get name>. Anyway, what's up?
+	^ {topic=random}
+
+	+ int help
+	- <add retry=1>{@int help name}
+< topic
+// Synonyms for gender pronouns that we can use later
+! array malenoun   = male guy boy dude boi man men gentleman gentlemen
+! array femalenoun = female girl chick woman women lady babe
+
+// Interview: user responds with their gender.
+> topic interview3 includes interview_common
+	+ @malenoun
+	* <bot gender> == male => Me too! How old are you?{@int male}
+	* <bot gender> == female => Cool! I'm a girl. How old are you?{@int male}
+	- Cool! I'm a <bot gender>. How old are you?{@int male}
+
+	+ @femalenoun
+	* <bot gender> == female => Me too! How old are you?{@int female}
+	* <bot gender> == male => Cool! I'm a boy. How old are you?{@int female}
+	- Cool! I'm a <bot gender>. How old are you?{@int female}
+
+	+ [i am|im] a (@malenoun|@femalenoun)
+	@ <star>
+
+	+ *
+	* <get retry> > <env interview_retry> => {@int abort}
+	- I asked if you're a boy or a girl? {@int help}
+	- So are you a boy or a girl? {@int help}
+
+	+ int help
+	- <add retry=1>{@int help gender}
+
+	+ int male
+	- <set gender=male><set retry=0>{topic=interview4}
+
+	+ int female
+	- <set gender=female><set retry=0>{topic=interview4}
+< topic
+
+// Interview: user responds with their age.
+> topic interview4 includes interview_common
+	+ #
+	- <set age=<star>>I'll remember that you're <get age> years old.
+	^ I'm <bot age>, myself. That's all the questions I have for now -- let's
+	^ chat. What's up?{topic=random}
+
+	+ (i am|im) # [years old]
+	@ <star2>
+
+	+ *
+	* <get retry> > <env interview_retry> => {@int abort}
+	- Tell me your age as a number. {@int help}
+	- Can you tell me your age as a number? {@int help}
+
+	+ int help
+	- <add retry=1>{@int help age}
+< topic

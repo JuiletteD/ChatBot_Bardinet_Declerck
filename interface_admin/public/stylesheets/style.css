@@ -2,7 +2,19 @@ body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
+main{
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
+}
+.card{
+  margin: 0.5%;
+  margin: 5px;
+
+
+}
 a {
   color: #00B7FF;
 }

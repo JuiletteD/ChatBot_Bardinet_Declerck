@@ -4,8 +4,12 @@ class PrivateGestionnaire { // un singleton qui est censé rester le même
     constructor() {
         this.chatBots = [];
     }
-    getAllChatBots() {
-        return this.chatBots;
+    getAllChatBotsInfos() {
+        var resp = []
+        for (var i = 0; i < this.chatBots.length; i++) {
+                resp.push(this.chatBots[i].getInfos());
+        }
+        return resp;
     }
     addNewChatBot(name, login) {
         var newChatbot = new ChatBot(name, login);
