@@ -6,10 +6,11 @@ class ChatBot {
     this.name = name;
     this.login = login;
     this.etat = "idle"
-    this.brains = ["brain/rs-standard.rive"];
+    this.brains = ["/brain/rs-standard.rive"];
   }
   async addBrains(brain) {
     this.brains.push(brain);
+    console.log(this.brains);
     await this.reloadBrain();
   }
   getInfos() {
@@ -28,7 +29,12 @@ class ChatBot {
   }
   async reloadBrain() {
     this.etat = "loading"
-    await this.bot.loadFile(this.brains);
+    var arr = []
+    for (var i = 0; i < this.brains.length; i++) {
+      arr.push(__dirname.concat(this.brains[i]));
+    }
+
+    await this.bot.loadFile(arr);
     this.loading_done();
   }
 
@@ -37,8 +43,8 @@ class ChatBot {
     console.log("Bot>", reply);
     return reply;
   }
-  async getUservarsBot(username){
-    var vars =await this.bot.getUservars(username);
+  async getUservarsBot(username) {
+    var vars = await this.bot.getUservars(username);
     console.log(vars);
     return vars;
   }

@@ -1,10 +1,15 @@
 var RiveScript = require("rivescript");
 //var bot = new RiveScript();
 var ChatBot = require('./ChatBot.js');
+const Gestionnaire = require("../classes/Gestionnaire_ChatBot.js")
 
-async function chatty(){
+
+async function chatty() {
 
     var chatbot = new ChatBot();
+ //   var chatbot = new ChatBot()
+//await chatbot.addBrains("brain/begin-getUserVar.rive" );
+//console.log(chatbot.getInfos());
     console.log(chatbot.getInfos());
     await chatbot.reloadBrain();
     await chatbot.getReply("me", "hello");
@@ -19,4 +24,5 @@ async function chatty(){
     console.log(chatbot.getInfos());
 
 }
-chatty()
+
+//chatty()

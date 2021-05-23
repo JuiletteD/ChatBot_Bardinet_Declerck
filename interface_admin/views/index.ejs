@@ -1,53 +1,57 @@
 <%- include("header.ejs"); %>
 
-  <h1>Chatbots</h1>
-  <p>
-    Gestionnaire de  <%=title%>
-  </p>
-<main>
-
-  <div class="card mb-3">
-      <h5 class="card-header">Créer un ChatBot</h5>
+  <h1 style="text-align: center;">
+    Gestionnaire de <%=title%>
+  </h1>
+  <main>
+    </br>
+    <h5 class="">Créer un ChatBot</h5>
+    <div class="card mb-3">
       <div class="card-body">
-      <form method="post" class="card-text" action="/gerer/creer">
-        <div class="form-group">
-          <label for="name">Nom du ChatBot</label>
-          <input type="text" class="form-control" name="name" />
-        </div>
-        <div class="form-group">
-          <label for="login">Login</label>
-          <input type="text" class="form-control" name="login" />
-        </div>
-          <input type="submit" value="créer" class="btn">
-
-      </form>
+        <form method="post" class="card-text" action="/gerer/creer">
+          <div class="form-group">
+            <label for="name">Nom du ChatBot :</label>
+            <input type="text" class="form-control" name="name" />
+          </div>
+          <div class="form-group">
+            <label for="login">Utilisateur :</label>
+            <input type="text" class="form-control" name="login" />
+          </div>
+          <input type="submit" value="créer" class="btn btn-light">
+        </form>
+      </div>
     </div>
-  </div>
-  <div class="d-flex align-content-start flex-wrap">
-         <%
-var Chatbots= JSON.parse(chatbots);
 
-for (var i = 0; i < Chatbots.length; i++) {
-%>
-</br>
-<div class="card border-secondary mb-3" style="max-width: 18rem;">
-	<h5 class="card-header">
-		<%=Chatbots[i].name%>
-	</h5>
-	<div class="card-body text-secondary">
-<ul class="list-group"></ul>
-<li class="list-group-item">Login : <%=Chatbots[i].login%></li>
-<li class="list-group-item">Etat : <%=Chatbots[i].etat%></li>
-<li class="list-group-item">Brains : <%=Chatbots[i].brains%></li>
-</ul>
-</div>
-<div class="card-footer bg-transparent border-success">
-  <a href="">Voir plus</a>
-</div>
-</div>
+      <% var Chatbots=JSON.parse(chatbots); if(Chatbots.length>0){
+        %>
+        <h5 class="">Mes ChatBots</h5>
 
-<%}
-%>
-</div>
-</main>
+        <div class="d-flex align-content-start flex-wrap">
+
+        <%} for (var i=0; i < Chatbots.length; i++) { %>
+          </br>
+          <div class="card mb-3" style="max-width: 18rem;">
+            <h5 class="card-header text-muted">
+              <%=Chatbots[i].name%>
+            </h5>
+            <div class="card-body text-secondary">
+              <ul class="list-group"></ul>
+              <li class="list-group-item">Utilisateur : <%=Chatbots[i].login%>
+              </li>
+              <li class="list-group-item">Etat : <%=Chatbots[i].etat%>
+              </li>
+              <li class="list-group-item">Cerveaux : <%=Chatbots[i].brains%>
+              </li>
+              </ul>
+            </div>
+            <div class="card-footer bg-transparent">
+              <form method="post" action="/gerer/chatbot">
+                <input type="hidden" name="name" value=<%=Chatbots[i].name%> >
+                <input type="submit" value="Voir plus" class="btn btn-link">
+              </form>
+            </div>
+          </div>
+          <%} %>
+    </div>
+  </main>
   <%- include("footer.ejs"); %>

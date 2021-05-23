@@ -9,6 +9,9 @@ main{
   justify-content: center;
 
 }
+.inred{
+  color: rgb(255, 0, 0) !important;
+}
 .card{
   margin: 0.5%;
   margin: 5px;

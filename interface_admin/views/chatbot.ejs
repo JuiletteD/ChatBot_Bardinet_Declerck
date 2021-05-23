@@ -1,0 +1,46 @@
+<%- include("header.ejs"); %>
+  <a href="/" class="btn-lg" style="padding: .0rem 0rem;">Retour</a>
+  <main>
+    <% var Jchatbot=JSON.parse(chatbot);%>
+      <div class="card mb-3">
+        <h5 class="card-header">
+          <%=Jchatbot.name %>
+        </h5>
+        <div class="card-body">
+          <ul class="list-group"></ul>
+          <li class="list-group-item">Utilisateur : <%=Jchatbot.login %>
+          </li>
+          <li class="list-group-item">Etat : <%=Jchatbot.etat %>
+          </li>
+          <li class="list-group-item">Cerveaux : <%=Jchatbot.brains %>
+          </li>
+          </ul>
+        </div>
+        <%var Jfiles=JSON.parse(files); if(Jfiles.length>0){%>
+          <div class="card-body">
+            <form method="post" action="/gerer/addBrain" class="card-text">
+              <div class="form-group">
+                <label for="brain">Ajouter un cerveau :</label>
+                <select name="brain" class="form-control">
+                  <% for (var i=0; i < Jfiles.length; i++) { %>
+                    <option value=<%=Jfiles[i] %>><%=Jfiles[i]%>
+                    </option>
+                    <%} %>
+                </select>
+              </div>
+              <input type="hidden" name="name" value=<%=Jchatbot.name %>>
+              <input type="submit" value="ajouter" class="btn btn-light">
+            </form>
+          </div>
+          <%}%>
+          <div class="card-body">
+            <form method="post" action="/gerer/suppChatbot" class="card-text">
+              <div class="form-group">
+              <input type="hidden" name="name" value=<%=Jchatbot.name %>>
+              <input type="submit" value="Supprimer le chatbot" class="btn btn-link inred">
+            </form>
+          </div>
+      </div>
+
+  </main>
+  <%- include("footer.ejs"); %>
