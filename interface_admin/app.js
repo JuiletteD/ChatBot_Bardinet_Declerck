@@ -6,6 +6,8 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var gererRouter = require('./routes/gererChatbot.js');
+//Est-ce que tu voulais pas plutot mettre 'interface_administrateur' ?
+var chatRouter = require('./routes/interface_com.js');
 
 var app = express();
 
@@ -22,6 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/gerer', gererRouter);
+app.use('/chat', chatRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

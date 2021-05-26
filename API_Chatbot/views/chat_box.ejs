@@ -1,0 +1,127 @@
+<html>
+
+    <head>
+        <title>Chatting With <%= chatbot_id %>
+        </title>
+        <link rel="stylesheet" href="..\stylesheets\style.css">
+    </head>
+    <script src="https://unpkg.com/rivescript@latest/dist/rivescript.min.js"></script>
+    
+    <script>
+        function init(){
+            
+            const bot = new RiveScript();
+            /*
+            // Load a directory full of RiveScript documents (.rive files). This is for
+            bot.loadDirectory("brain").then(loading_done).catch(loading_error);
+            */
+
+            // Load an individual file.
+            bot.loadFile("../riveBrains/brain1.rive").then(loading_done).catch(loading_error);
+
+            function loading_done() {
+                console.log("Bot has finished loading!");
+
+                // Now the replies must be sorted!
+                bot.sortReplies();
+
+                // And now we're free to get a reply from the brain!
+
+                // RiveScript remembers user data by their username and can tell
+                // multiple users apart.
+                let username = "local-user";
+
+                // NOTE: the API has changed in v2.0.0 and returns a Promise now.
+                bot.reply(username, "Hello, bot!").then(function (reply) {
+                    console.log("The bot says: " + reply);
+                });
+            }
+
+            // It's good to catch errors too!
+            function loading_error(error, filename, lineno) {
+            console.log("Error when loading files: " + error);
+            }
+
+            const message_container = document.getElementById('chatbox');
+            const chat_container = document.getElementById('chat_container');
+            const form = document.getElementById('sendmsg');
+            const input_box = document.querySelector('input');
+            const printbutton = document.getElementById('scrollprint');
+            const scrollbutton = document.getElementById('autoscroll');
+
+            printbutton.addEventListener("click", (e) => {
+                e.preventDefault();
+                console.log("scrollTop message =" + message_container.scrollTop + "  scrollHeight= " + message_container.scrollHeight + " clientHeight = " + message_container.clientHeight);
+                console.log("scrollTop chat =" + chat_container.scrollTop + "  scrollHeight= " + chat_container.scrollHeight + " clientHeight = " + chat_container.clientHeight);
+            });
+
+            scrollbutton.addEventListener("click", (e) => {
+                e.preventDefault();
+                scrolladjust();
+            });
+
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                selfReply(input_box.value);
+                input_box.value = '';
+            });
+
+            function botReply(message) {  
+                let scrollIsPossible = scrollpossible();              
+                message_container.innerHTML += `<div class=bot>${message}</div>`;
+                if (scrollIsPossible == true) {
+                    scrolladjust();
+                }
+            }
+            
+            function selfReply(message) {
+                //On regarde si l'utilisateur est en bas de la page de messages
+                let scrollIsPossible = scrollpossible();
+                console.log(scrollIsPossible);
+                //Si il faut scroll, alors on scroll en bas, apres envoie du message
+            
+
+                message_container.innerHTML += `<div class=self>${message}</div>`;
+
+                if (scrollIsPossible==true) {
+                    scrolladjust();
+                }
+
+                //location.href = '#edge';
+                
+                bot.reply("local - user", message).then(function (reply) {
+                    botReply(reply);
+                });
+                
+            }
+
+            function scrollpossible(){
+                if(chat_container.scrollHeight - Math.abs(chat_container.scrollTop) === chat_container.clientHeight){
+                    return true;
+                }
+                return false;
+            }
+
+            function scrolladjust(){
+                chat_container.scrollTop = chat_container.scrollHeight - chat_container.clientHeight;
+            }
+
+        }
+
+    </script>
+
+<body onload="init()">
+    <button id="scrollprint" type="button">print scroll</button>    
+    <button id="autoscroll" type="button">auto scroll</button>
+    <div id='chat_container' class=chat>
+        <div id=chatbox class=messages></div>
+        <div id=edge></div>
+        
+        <form id="sendmsg" class="actions">
+            <input type=text placeholder="press ‘Enter’ to send…">
+        </form>
+    </div>
+
+</body>
+
+</html>
