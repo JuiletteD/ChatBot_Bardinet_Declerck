@@ -1,46 +1,13 @@
 <html>
 
     <head>
-        <title>Chatting With <%= chatbot_id %>
-        </title>
-        <link rel="stylesheet" href="..\stylesheets\style.css">
+        <title>Chatting With <%= chatbot_name %></title>
+        
+        <link rel="stylesheet" href="/stylesheets/style.css">
     </head>
-    <script src="https://unpkg.com/rivescript@latest/dist/rivescript.min.js"></script>
     
     <script>
         function init(){
-            
-            const bot = new RiveScript();
-            /*
-            // Load a directory full of RiveScript documents (.rive files). This is for
-            bot.loadDirectory("brain").then(loading_done).catch(loading_error);
-            */
-
-            // Load an individual file.
-            bot.loadFile("../riveBrains/brain1.rive").then(loading_done).catch(loading_error);
-
-            function loading_done() {
-                console.log("Bot has finished loading!");
-
-                // Now the replies must be sorted!
-                bot.sortReplies();
-
-                // And now we're free to get a reply from the brain!
-
-                // RiveScript remembers user data by their username and can tell
-                // multiple users apart.
-                let username = "local-user";
-
-                // NOTE: the API has changed in v2.0.0 and returns a Promise now.
-                bot.reply(username, "Hello, bot!").then(function (reply) {
-                    console.log("The bot says: " + reply);
-                });
-            }
-
-            // It's good to catch errors too!
-            function loading_error(error, filename, lineno) {
-            console.log("Error when loading files: " + error);
-            }
 
             const message_container = document.getElementById('chatbox');
             const chat_container = document.getElementById('chat_container');

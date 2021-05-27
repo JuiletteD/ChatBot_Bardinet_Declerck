@@ -6,17 +6,18 @@
     <div>
         <h1>Bot List</h1>
         <ul>
-            <% chatbotlist.chatbots.forEach(function(bot) { %>
+            <% chatbotlist.forEach(function(bot) { %>
                 <li>
                     <div style="display: flex;">
-                        id : <%= bot.id %>
-                        nom : <%= bot.nom %>    
+                        login : <%= bot.login %>
+                        nom : <%= bot.name %>    
 
                     </div>
 
-                    <form action="/chat/<%= bot.id %>" method="post">
-                        <input type="hidden" name="id" value="<%= bot.id %>" />
-                        <input type="hidden" name="nom" value="<%= bot.nom %>" />
+                    <form action="/chat/<%= bot.name %>" method="post">
+                        <input type="hidden" name="login" value="<%= bot.login %>" />
+                        <input type="hidden" name="name" value="<%= bot.name %>" />
+                        <input type="hidden" name="status" value="firstAccess" />
                         <input type="submit" value="chat" />
                     </form>
 
