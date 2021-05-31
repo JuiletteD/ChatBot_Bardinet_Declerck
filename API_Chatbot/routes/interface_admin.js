@@ -49,7 +49,7 @@ router.post('/chatbot', function (req, res, next) {
 
 /* POST ajouter un cerveau. */
 router.post('/addBrain', async function (req, res, next) {
-    console.log("add :",req.body.brain," to :",req.body.name);
+    console.log("add :", req.body.brain, " to :", req.body.name);
 
     let gest = Gestionnaire.getInstance();
     var chatbot = gest.getChatBotByName(req.body.name);
@@ -93,18 +93,42 @@ router.post('/addBrain', async function (req, res, next) {
 
 /* DELETE un chatbot. */
 router.post('/suppChatbot', async function (req, res, next) {
-    console.log("delete : ",req.body.name)
+    console.log("delete : ", req.body.name)
     let gest = Gestionnaire.getInstance();
     var deletedChatbot = gest.removeChatBot(req.body.name);
-    var deletedInfos =""
-   if(deletedChatbot!== null){
-    deletedInfos = JSON.stringify(deletedChatbot.getInfos());
-    res.json(JSON.stringify({ 'succes': "true", 'chatbot':deletedInfos }));
-   }else{
-       deletedInfos("Chatbot not found !");
-       res.json(JSON.stringify({ 'succes': "false", 'chatbot':null }));
-   }
+    var deletedInfos = ""
+    if (deletedChatbot !== null) {
+        deletedInfos = JSON.stringify(deletedChatbot.getInfos());
+        res.json(JSON.stringify({ 'succes': "true", 'chatbot': deletedInfos }));
+    } else {
+        deletedInfos("Chatbot not found !");
+        res.json(JSON.stringify({ 'succes': "false", 'chatbot': null }));
+    }
 });
 
+
+// WORKER POUR DISCORDJS
+//------------------------------------------------------------------------
+const { Worker } = require('worker_threads')
+
+function runService(workerData) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker('../classes/worker.js', { workerData });
+    worker.on('message', resolve);
+    worker.on('error', reject);
+    worker.on('exit', (code) => {
+      if (code !== 0)
+        reject(new Error(`Worker stopped with exit code ${code}`));
+    })
+  })
+}
+
+async function run() {
+  const result = await runService({token: "ODQ3MDgxOTI0NDA5Mjk0ODQ4.YK44hA.tGfRawfQY_xErHkei8cAlkoq_fo", 
+  botname: "trois", chatbot: new chatbot()})
+  console.log(result);
+}
+
+run().catch(err => console.error(err))
 
 module.exports = router;
