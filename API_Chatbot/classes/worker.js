@@ -9,7 +9,6 @@ var token = myArgs[1];
 var disc = new DiscordCom(botname, token);
 
 onmessage = async function (ev) {
-    //console.log(ev.data)
     var recu =""
     try {
         recu = JSON.parse(ev.data)

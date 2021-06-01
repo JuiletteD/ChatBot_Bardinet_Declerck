@@ -1,12 +1,13 @@
 var Worker = require("tiny-worker");
 var ChatBot = require('./ChatBot.js');
+var path = require('path');
+
 var chatbot = new ChatBot("rferfe", "refrefe");
 var botname = "my bot is so cool";
 var token =  "ODQ3MDgxOTI0NDA5Mjk0ODQ4.YK44hA.tGfRawfQY_xErHkei8cAlkoq_fo";
 init();
 
-var worker = new Worker(__dirname + "/worker.js",
-[botname,token], { esm: true, execArgv: []});
+var worker = new Worker(__dirname + "/worker.js",[botname,token], { esm: true, execArgv: []});
 
 
 async function init(){

@@ -16,16 +16,15 @@ router.get('/', function (req, res, next) {
 
 router.post('/:nom', function (req, res, next) {
     let gest = Gestionnaire.getInstance();
-    newchatbot = gest.addNewChatBot(req.body.name, req.body.login);
+    newchatbot = gest.getChatBotByName(req.body.name);
 
-    console.log("ajout d'un nouveaux chatbot")
     console.log(req.params);
     console.log(JSON.stringify(req.body));
 
 
     //Si il s'agit du première accès à la page de tchat, le bot ne dit rien
     if(req.body.status=='firstAccess'){
-        res.render('chat_box.ejs', { chatbot_name: req.params.nom , userLogin: req.body.login});
+        res.render('chat_box.ejs', { chatbot_name: req.body.name, userLogin: req.body.login});
     }
 
 });

@@ -9,8 +9,7 @@ router.post('/creer', async function(req, res, next) {
   const response = await fetch('http://localhost:3000/admin/creer', {
 			method: "POST",
 			body: JSON.stringify({
-				name: req.body.name,
-        		login: req.body.login
+				name: req.body.name
 			}),
 			headers: {
 				"Content-type": "application/json",
@@ -46,7 +45,7 @@ console.log(req.body.brain)
 console.log(req.body.name)
 
 	const response = await fetch('http://localhost:3000/admin/addBrain', {
-			  method: "POST",
+			  method: "PUT",
 			  body: JSON.stringify({
 				  name: req.body.name,
 				  brain: req.body.brain
@@ -63,11 +62,11 @@ console.log(req.body.name)
   });
 
 /* POST supprimer chatbot. */
-router.post('/suppChatbot', async function(req, res, next) {
+router.post('/delete', async function(req, res, next) {
 	console.log(req.body.name)
 	
-		const response = await fetch('http://localhost:3000/admin/suppChatbot', {
-				  method: "POST",
+		const response = await fetch('http://localhost:3000/admin/delete', {
+				  method: "DELETE",
 				  body: JSON.stringify({
 					  name: req.body.name
 				  }),
