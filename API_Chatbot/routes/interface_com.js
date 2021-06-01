@@ -16,7 +16,7 @@ router.get('/', function (req, res, next) {
 
 router.post('/:nom', function (req, res, next) {
     let gest = Gestionnaire.getInstance();
-    newchatbot = gest.addNewChatBot(req.body.name, req.body.login);
+    newchatbot = gest.getChatBotByName(req.body.name);
 
     console.log("ajout d'un nouveaux chatbot")
     //console.log(req.params);
