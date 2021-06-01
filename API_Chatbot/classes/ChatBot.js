@@ -1,12 +1,13 @@
 var RiveScript = require("rivescript")
 
 class ChatBot {
-  constructor(name, login) {
+  constructor(name) {
     this.bot = new RiveScript({ utf8: true });
     this.name = name;
-    this.login = login;
+    this.login = "defaultlogin";
     this.etat = "idle"
     this.brains = ["/brain/rs-standard.rive"];
+    this.worker = null;
   }
   async addBrains(brain) {
     this.brains.push(brain);
