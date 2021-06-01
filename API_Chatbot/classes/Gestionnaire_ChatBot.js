@@ -12,8 +12,8 @@ class PrivateGestionnaire { // un singleton qui est censé rester le même
         }
         return resp;
     }
-    addNewChatBot(name) {
-        var newChatbot = new ChatBot(name);
+    addNewChatBot(name, login) {
+        var newChatbot = new ChatBot(name, login);
         this.chatBots.push(newChatbot);
         return newChatbot;
     }

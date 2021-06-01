@@ -5,11 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var gererChatbot = require('./routes/gererChatbot.js');
-var gererDiscord = require('./routes/gererDiscord.js');
-
+var gererRouter = require('./routes/gererChatbot.js');
 //Est-ce que tu voulais pas plutot mettre 'interface_administrateur' ?
-//var chatRouter = require('./routes/interface_com.js');
+var chatRouter = require('./routes/interface_com.js');
 
 var app = express();
 
@@ -25,9 +23,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/gerer', gererChatbot);
-app.use('/discord', gererDiscord);
-//app.use('/chat', chatRouter);
+app.use('/gerer', gererRouter);
+app.use('/chat', chatRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

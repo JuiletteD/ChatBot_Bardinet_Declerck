@@ -6,86 +6,41 @@
         <h5 class="card-header">
           <%=Jchatbot.name %>
         </h5>
-
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">
-            <h5 class="font-italic">
-             Interface de communication
-            </h5>
-            </br>
-            <form method="post" action="http://localhost:3000/chat/<%=Jchatbot.name%>" class="card-text">
+        <div class="card-body">
+          <ul class="list-group"></ul>
+          <li class="list-group-item">Utilisateur : <%=Jchatbot.login %>
+          </li>
+          <li class="list-group-item">Etat : <%=Jchatbot.etat %>
+          </li>
+          <li class="list-group-item">Cerveaux : <%=Jchatbot.brains %>
+          </li>
+          </ul>
+        </div>
+        <%var Jfiles=JSON.parse(files); if(Jfiles.length>0){%>
+          <div class="card-body">
+            <form method="post" action="/gerer/addBrain" class="card-text">
               <div class="form-group">
-                <label for="login">Login :</label>
-                <input type="hidden" name="name" value=<%=Jchatbot.name %>>
-                <input type="hidden" name="status" value="firstAccess" />
-                <input type="text" name="login" class="form-control">
+                <label for="brain">Ajouter un cerveau :</label>
+                <select name="brain" class="form-control">
+                  <% for (var i=0; i < Jfiles.length; i++) { %>
+                    <option value=<%=Jfiles[i] %>><%=Jfiles[i]%>
+                    </option>
+                    <%} %>
+                </select>
               </div>
-                <input type="submit" value="Ouvrir" class="btn btn-light">
+              <input type="hidden" name="name" value=<%=Jchatbot.name %>>
+              <input type="submit" value="ajouter" class="btn btn-light">
             </form>
-          </li>
-
-          <li class="list-group-item">
-            <h5 class="font-italic">
-              Etat Discord : <%=Jchatbot.etat %>
-            </h5>
-            </br>
-            <% if(Jchatbot.etat==="idle" ){%>
-              <form method="post" action="/discord/connect" class="card-text">
-                <div class="form-group">
-                  <label for="token">Token :</label>
-                  <input type="text" name="token" class="form-control">
-                  <input type="hidden" name="name" value=<%=Jchatbot.name %>>
-                </div>
-                <input type="submit" value="Connecter à discord" class="btn btn-light">
-              </form>
-              <% }else{ %>
-                <form method="post" action="/discord/disconnect" class="card-text">
-                  <div class="form-group">
-                    <input type="hidden" name="name" value=<%=Jchatbot.name %> >
-                  </div>
-                  <input type="submit" value="Déconnecter de discord" class="btn btn-danger">
-
-                </form>
-                <% }%>
-          </li>
-
-          <li class="list-group-item">
-            <h5 class="font-italic">
-              Cerveaux : <%=Jchatbot.brains %>
-            </h5>
-            </br>
-            <%var Jfiles=JSON.parse(files); if(Jfiles.length>0){%>
-              <form method="post" action="/gerer/addBrain" class="card-text">
-                <div class="form-group">
-                  <label for="brain">Fichier :</label>
-                  <select name="brain" class="form-control">
-                    <% for (var i=0; i < Jfiles.length; i++) { %>
-                      <option value=<%=Jfiles[i] %>><%=Jfiles[i]%>
-                      </option>
-                      <%} %>
-                  </select>
-                  <input type="hidden" name="name" value=<%=Jchatbot.name %>>
-                </div>
-                <input type="submit" value="Ajouter le cerveau" class="btn btn-light">
-              </form>
-              <%}%>
-          </li>
-
-          <li class="list-group-item">
-            <h5 class="font-italic">
-              Infos utilisateur
-            </h5>
-            <%=Jchatbot.login %>
-          </li>
-          <li class="list-group-item">
-            <form method="post" action="/gerer/delete" class="card-text">
+          </div>
+          <%}%>
+          <div class="card-body">
+            <form method="post" action="/gerer/suppChatbot" class="card-text">
               <div class="form-group">
-                <input type="hidden" name="name" value=<%=Jchatbot.name %>>
-                <input type="submit" value="Supprimer le chatbot" class="btn btn-danger">
-              </div>
+              <input type="hidden" name="name" value=<%=Jchatbot.name %>>
+              <input type="submit" value="Supprimer le chatbot" class="btn btn-link inred">
             </form>
-          </li>
-        </ul>
+          </div>
       </div>
+
   </main>
   <%- include("footer.ejs"); %>

@@ -7,7 +7,6 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/interface_admin');
-var discordRouter = require('./routes/interface_discord');
 var comRouter = require('./routes/interface_com');
 
 
@@ -28,7 +27,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
-app.use('/discord', discordRouter);
 app.use('/chat', comRouter);
 
 
