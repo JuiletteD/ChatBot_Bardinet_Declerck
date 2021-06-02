@@ -1,8 +1,7 @@
 var RiveScript = require("rivescript");
 //var bot = new RiveScript();
-var ChatBot = require('./ChatBot.js');
-const Gestionnaire = require("../classes/Gestionnaire_ChatBot.js")
-var DiscordCom = require('./discord_com');
+var ChatBot = require('../../ChatBot.js');
+const Gestionnaire = require("../../Gestionnaire_ChatBot.js")
 
 async function chatty() {
 
@@ -11,7 +10,7 @@ async function chatty() {
 //await chatbot.addBrains("brain/begin-getUserVar.rive" );
 //console.log(chatbot.getInfos());
     console.log(chatbot.getInfos());
-    await chatbot.addBrains("/brain/begin-getUserVar.rive");
+    await chatbot.addBrains("../brain/begin-getUserVar.rive");
 
     await chatbot.reloadBrain();
     await chatbot.getAllUservars();

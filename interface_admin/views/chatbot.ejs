@@ -26,10 +26,17 @@
 
           <li class="list-group-item">
             <h5 class="font-italic">
-              Etat Discord : <%=Jchatbot.etat %>
+              Etat Discord : 
+              <%if(Jchatbot.etatDiscord ===0 || Jchatbot.etatDiscord ===-1){
+                if(Jchatbot.etatDiscord ===0 ){%>
+              Pas de connection à discord
+              <% }else{%>
+              Token invalide, la connection n'a pas pu se faire
+              <%}%>
+              
             </h5>
             </br>
-            <% if(Jchatbot.etat!=="discord actif" ){%>
+           
               <form method="post" action="/discord/connect" class="card-text">
                 <div class="form-group">
                   <label for="token">Token :</label>
@@ -38,7 +45,10 @@
                 </div>
                 <input type="submit" value="Connecter à discord" class="btn btn-light">
               </form>
-              <% }else{ %>
+              <% }else if(Jchatbot.etatDiscord===2){%>
+                Connecté à discord
+              </h5>
+              </br>
                 <form method="post" action="/discord/disconnect" class="card-text">
                   <div class="form-group">
                     <input type="hidden" name="name" value=<%=Jchatbot.name %> >
@@ -77,8 +87,8 @@
             </h5>
             <%for(var i=0;i < Jchatbot.login.length;i++){ %>
           <li>
-            <%=Jchatbot.login%>
-              <%=Jchatbot.uservars%>
+            <%=Jchatbot.login[i]%>
+              <%=JSON.stringify(Jchatbot.uservars)%>
           </li>
           <%} %>
 
