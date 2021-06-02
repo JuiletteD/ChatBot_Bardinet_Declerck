@@ -10,7 +10,7 @@
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
             <h5 class="font-italic">
-             Interface de communication
+              Interface de communication
             </h5>
             </br>
             <form method="post" action="http://localhost:3000/chat/<%=Jchatbot.name%>" class="card-text">
@@ -20,7 +20,7 @@
                 <input type="hidden" name="status" value="firstAccess" />
                 <input type="text" name="login" class="form-control">
               </div>
-                <input type="submit" value="Ouvrir" class="btn btn-light">
+              <input type="submit" value="Ouvrir" class="btn btn-light">
             </form>
           </li>
 
@@ -29,7 +29,7 @@
               Etat Discord : <%=Jchatbot.etat %>
             </h5>
             </br>
-            <% if(Jchatbot.etat==="idle" ){%>
+            <% if(Jchatbot.etat!=="discord actif" ){%>
               <form method="post" action="/discord/connect" class="card-text">
                 <div class="form-group">
                   <label for="token">Token :</label>
@@ -75,16 +75,22 @@
             <h5 class="font-italic">
               Infos utilisateur
             </h5>
-            <%=Jchatbot.login %>
+            <%for(var i=0;i < Jchatbot.login.length;i++){ %>
+          <li>
+            <%=Jchatbot.login%>
+              <%=Jchatbot.uservars%>
           </li>
-          <li class="list-group-item">
-            <form method="post" action="/gerer/delete" class="card-text">
-              <div class="form-group">
-                <input type="hidden" name="name" value=<%=Jchatbot.name %>>
-                <input type="submit" value="Supprimer le chatbot" class="btn btn-danger">
-              </div>
-            </form>
-          </li>
+          <%} %>
+
+            </li>
+            <li class="list-group-item">
+              <form method="post" action="/gerer/delete" class="card-text">
+                <div class="form-group">
+                  <input type="hidden" name="name" value=<%=Jchatbot.name %>>
+                  <input type="submit" value="Supprimer le chatbot" class="btn btn-danger">
+                </div>
+              </form>
+            </li>
         </ul>
       </div>
   </main>

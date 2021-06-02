@@ -11,19 +11,21 @@ async function chatty() {
 //await chatbot.addBrains("brain/begin-getUserVar.rive" );
 //console.log(chatbot.getInfos());
     console.log(chatbot.getInfos());
+    await chatbot.addBrains("/brain/begin-getUserVar.rive");
+
     await chatbot.reloadBrain();
+    await chatbot.getAllUservars();
     await chatbot.getReply("me", "hello");
-    await chatbot.getReply("me", "how do you do?");
+    await chatbot.getReply("me", "my name is me");
     await chatbot.getReply("me", "what time is it?");
 
-    await chatbot.addBrains("/brain/begin-getUserVar.rive");
-    await chatbot.getReply("me", "i like blue");
-    await chatbot.getReply("me", "my name is Alan.");
-    await chatbot.getReply("me", "i'm 2 years old");
-    await chatbot.getUservarsBot("me");
-    console.log(chatbot.getInfos());
-    
+    await chatbot.getReply("you", "i like blue");
+    await chatbot.getReply("you", "my name is Alan.");
+    await chatbot.getReply("you", "i'm 2 years old");
+    await chatbot.getUservars("you");
+    await chatbot.getUservars("me");
+    await chatbot.getAllUservars();
+
 }
-var disc = new DiscordCom("rédé", "me", "it");
-disc.run();
-//chatty()
+
+chatty()

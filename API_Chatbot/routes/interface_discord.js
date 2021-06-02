@@ -8,27 +8,46 @@ var router = express.Router();
 router.post('/connect', async function (req, res, next) {
     let gest = Gestionnaire.getInstance();
     connectChatbot = gest.getChatBotByName(req.body.name);
-    await connectChatbot.reloadBrain();
-    var workerPath = path.join(__dirname, '..', '/classes/worker.js');
+    var ready = 'discord charge';
 
-    connectChatbot.worker = new Worker(workerPath,
-        [req.body.name, req.body.token], { esm: true, execArgv: [] });
-    connectChatbot.etat = "discord actif";
 
-    connectChatbot.worker.onmessage = async function (ev) {
-        try {
-            message = JSON.parse(ev.data);
-            var reply = await connectChatbot.getReply(message.author, message.mess.content);
-            connectChatbot.worker.postMessage(JSON.stringify({ 'message': message.mess, 'resp': reply }));
-        } catch (error) {
-            console.log("not a json received-- normal at the beginning of the worker")
-        }
-    };
+    if (connectChatbot.etat !== 'idle') {
+        await connectChatbot.reloadBrain();
+        var workerPath = path.join(__dirname, '..', '/classes/worker.js');
+
+        connectChatbot.worker = new Worker(workerPath,
+            [req.body.name, req.body.token], { esm: true, execArgv: [] });
+        connectChatbot.etat = ready;
+
+        connectChatbot.worker.onmessage = async function (ev) {
+            try {
+                message = JSON.parse(ev.data);
+
+                if (message.error === 'An invalid token was provided.') {
+                    console.log(message.error);
+                    connectChatbot.disconnectDiscord();
+                } else if(message.ready === 'discord actif'){
+                    connectChatbot.etat = 'discord actif';
+                }else{
+                    var reply = await connectChatbot.getReply(message.author, message.mess.content);
+                    connectChatbot.worker.postMessage(JSON.stringify({ 'message': message.mess, 'resp': reply }));
+                    
+                }
+            } catch (error) {
+                console.log("not a json received-- normal at the beginning of the worker");
+            }
+        };
+        
+        connectChatbot.etat = waitForDiscordReady(connectChatbot);
+
+
+    }
 
     var infos = JSON.stringify(connectChatbot.getInfos());
     console.log(infos)
 
     res.json(infos);
+
 });
 
 
@@ -36,9 +55,7 @@ router.post('/connect', async function (req, res, next) {
 router.delete('/disconnect', async function (req, res, next) {
     let gest = Gestionnaire.getInstance();
     var disconnectChatbot = gest.getChatBotByName(req.body.name);
-
-    disconnectChatbot.worker.terminate();
-    disconnectChatbot.etat = "idle";
+    disconnectChatbot.disconnectDiscord();
 
     var infos = JSON.stringify(disconnectChatbot.getInfos());
     console.log(infos)
@@ -46,6 +63,17 @@ router.delete('/disconnect', async function (req, res, next) {
     res.json(infos);
 });
 
+
+function waitForDiscordReady(connectChatbot) {
+    if (connectChatbot.etat === 'discord charge') { // not set yet
+        setImmediate(waitForDiscordReady(connectChatbot)); // try again on the next event loop cycle
+        return; //stop this attempt
+    }else if (connectChatbot.etat === 'discord actif') {
+        return connectChatbot.etat;
+    }else if (connectChatbot.etat === 'idle'){
+        return 'connection failed'        
+    }
+}
 
 
 module.exports = router;

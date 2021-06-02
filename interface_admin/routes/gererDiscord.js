@@ -19,7 +19,12 @@ router.post('/connect', async function(req, res, next) {
 		const data = await response.json();
 		console.log("data received:" + data);
 
-		res.redirect(307, '../gerer/chatbot');
+		if(JSON.parse(data).error!==undefined){
+			console.log("error in gerediscord");
+			throw new Error(JSON.parse(data).error);
+		}else{
+			res.redirect(307, '../gerer/chatbot');
+		}
 });
 
 

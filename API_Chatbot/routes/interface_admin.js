@@ -17,7 +17,7 @@ router.post('/creer', function (req, res, next) {
     let gest = Gestionnaire.getInstance();
     newchatbot = gest.addNewChatBot(req.body.name);
     var infos = JSON.stringify(newchatbot.getInfos());
-    console.log(infos)
+    console.log(infos);
 
     res.json(infos);
 });

@@ -5,16 +5,10 @@ const Discord = require('discord.js');
 class DiscordCom {
 	constructor(botname, token) {
 		this.botname = botname;
-		this.token = "ODQ3MDgxOTI0NDA5Mjk0ODQ4.YK44hA.tGfRawfQY_xErHkei8cAlkoq_fo";
-		this.chatbot = new ChatBot();
+		this.token = token;
 		this.client = new Discord.Client();
-		this.init();
-		
 	}
-	async init() {
-		console.log(chatbot.getInfos());
-		await chatbot.reloadBrain();
-	}
+	
 	run() {
 		client.once('ready', () => {
 			console.log('Ready!');
