@@ -9,6 +9,8 @@ class ChatBot {
     this.name = name;
     // tableau des noms des utilisateurs
     this.login = [];
+
+    this.loginInfo = [];
     // cerveaux du bot
     this.brains = ["/brain/rs-standard.rive"];
 
@@ -27,12 +29,13 @@ class ChatBot {
   addLogin(login) {
     console.log("Ajout de l'utilisateur "+login+" à "+this.name);
     this.login.push(login);
+    this.loginInfo.push({'login':login, 'name': 'unknown', 'age': 0, 'like': 'unknown'});
   }
-  getInfos() {
-    var uservars = JSON.stringify(this.getAllUservars());
-    console.log("Variables utilisateurs : "+uservars);
+  async getInfos() {
+    await this.getAllUservars();
+  
     return { 'name': this.name, 'login': this.login, 'etatDiscord': this.etatDiscord, 'brains': this.brains, 
-  'uservars': uservars };
+  'loginInfo': this.loginInfo };
   }
   loading_done() {
     console.log("Bot has finished loading!");
@@ -67,15 +70,36 @@ class ChatBot {
   }
   async getAllUservars() {
     var vars = [];
-    for(var i=0;i<this.login.length;i++){
-      vars.push(await this.bot.getUservars(this.login[i]));
+    for(var i=0;i < this.login.length;i++){
+      var temp = await this.getUservars(this.login[i]);
+      vars.push(temp);
     }
-    return vars;
+    //stocke les nouvelles informations dans loginInfos
+    this.loginInfo = vars;
+
+    return this.loginInfo;
   }
+
   async getUservars(username) {
     var vars = await this.bot.getUservars(username);
-    return vars;
+
+    var name = 'unknown';
+    if(vars.name !== undefined){
+      name = vars.name;
+    }
+    var age = 0;
+    if(vars.age !== undefined){
+      age = vars.age;
+    }
+    var like ='unknown';
+    if(vars.like !== undefined){
+      like = vars.like;
+    }
+
+    return {'login':username, 'name': name, 'age': age, 'like': like};
   }
+
+
   disconnectDiscord(){
     if(this.worker!==null){
       console.log("Disconnection de ",this.name," de discord");

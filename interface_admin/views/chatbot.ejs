@@ -82,13 +82,19 @@
 
           <li class="list-group-item">
             <h5 class="font-italic">
-              Infos utilisateur
-            </h5>
-            <%for(var i=0;i < Jchatbot.login.length;i++){ %>
-          <li>
-            <%=Jchatbot.login[i]%>
-              <%=JSON.stringify(Jchatbot.uservars)%>
-          </li>
+              Infos utilisateur</h5>
+            <%for(var i=0;i < Jchatbot.loginInfo.length;i++){ %>
+          
+              <li class="list-group-item"> <%=Jchatbot.loginInfo[i].login%>
+          </br>
+            Name : <%=Jchatbot.loginInfo[i].name%>
+        </br>
+            Age : <%=Jchatbot.loginInfo[i].age%>
+      </br>
+            Like : <%=Jchatbot.loginInfo[i].like%>
+    </br>
+  </li>
+          
           <%} %>
 
             </li>

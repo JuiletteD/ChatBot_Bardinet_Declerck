@@ -5,10 +5,11 @@ class PrivateGestionnaire { // un singleton qui est censé rester le même
     constructor() {
         this.chatBots = []; // les chatbots crées
     }
-    getAllChatBotsInfos() {
+    async getAllChatBotsInfos() {
         var resp = []
         for (var i = 0; i < this.chatBots.length; i++) {
-            resp.push(this.chatBots[i].getInfos());
+            var temp = await this.chatBots[i].getInfos();
+            resp.push(temp);
         }
         return resp;
     }
@@ -38,8 +39,10 @@ class PrivateGestionnaire { // un singleton qui est censé rester le même
             }
         }
     }
-    getChatBotInfos(name) {
-        return this.getChatBotByName(name).getInfos();
+    async getChatBotInfos(name) {
+        var chatbot = this.getChatBotByName(name);
+        var temp = await chatbot.getInfos();
+        return temp;
     }
     getRivescriptFile() {  // récupérer la liste des fichier rives disponible (on suppose que tous les fichiers de brain sont des fichiers rive)
         var chaine = "/brain/"

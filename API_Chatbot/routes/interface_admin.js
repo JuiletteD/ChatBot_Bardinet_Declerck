@@ -3,28 +3,30 @@ const Gestionnaire = require("../classes/Gestionnaire_ChatBot.js")
 var router = express.Router();
 
 /* GET recuperer tous les chatbots. */
-router.get('/chatbots', function (req, res, next) {
+router.get('/chatbots', async function (req, res, next) {
     let gest = Gestionnaire.getInstance();
-    chatbots = gest.getAllChatBotsInfos();
+    chatbots = await gest.getAllChatBotsInfos();
 
+    console.log(chatbots);
     res.json(JSON.stringify(chatbots));
 });
 
 
 /* POST creer chatbot. */
-router.post('/creer', function (req, res, next) {
+router.post('/creer', async function (req, res, next) {
     let gest = Gestionnaire.getInstance();
     newchatbot = gest.addNewChatBot(req.body.name);
-    var infos = JSON.stringify(newchatbot.getInfos());
+    var temp = await newchatbot.getInfos();
+    var infos = JSON.stringify(temp);
     console.log("infos de creees :"+infos);
 
     res.json(infos);
 });
 
 /* POST acceder chatbot. */
-router.post('/chatbot', function (req, res, next) {
+router.post('/chatbot', async function (req, res, next) {
     let gest = Gestionnaire.getInstance();
-    var chatbotInfos = gest.getChatBotInfos(req.body.name);
+    var chatbotInfos = await gest.getChatBotInfos(req.body.name);
     var files = gest.getRivescriptFile();
 
     var resp = []
@@ -45,7 +47,7 @@ router.post('/chatbot', function (req, res, next) {
     res.json(JSON.stringify({ 'files': JSON.stringify(resp), 'chatbot': JSON.stringify(chatbotInfos) }));
 });
 
-/* POST ajouter un cerveau. */
+/* PUT ajouter un cerveau. */
 router.put('/addBrain', async function (req, res, next) {
     console.log("add :", req.body.brain, " to :", req.body.name);
     let gest = Gestionnaire.getInstance();
@@ -66,7 +68,7 @@ router.put('/addBrain', async function (req, res, next) {
     }
 
     // on recherge les informations du bot et du dossier des fichiers rivescript
-    var chatbotnewInfos = chatbot.getInfos()
+    var chatbotnewInfos = await chatbot.getInfos()
     var files = gest.getRivescriptFile();
     var resp = []
     var isin = false;
@@ -94,7 +96,8 @@ router.delete('/delete', async function (req, res, next) {
     var deletedInfos = ""
     
     if (deletedChatbot !== null) {
-        deletedInfos = JSON.stringify(deletedChatbot.getInfos());
+        var temp = await deletedChatbot.getInfos()
+        deletedInfos = JSON.stringify(temp);
         res.json(JSON.stringify({ 'succes': "true", 'chatbot': deletedInfos }));
     } else {
         deletedInfos("Chatbot not found !"+req.body.name);

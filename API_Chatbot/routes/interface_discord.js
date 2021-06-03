@@ -23,7 +23,7 @@ router.post('/connect', async function (req, res, next) {
     connectChatbot.worker.onmessage = async function (ev) {
         try {
             message = JSON.parse(ev.data);
-            console.log("MESSAGE" + ev.data);
+            //console.log("MESSAGE" + ev.data);
             // si la connection a échouée en raison du token
             if (message.error === 'An invalid token was provided.') {
                 //console.log(message.error);
@@ -35,6 +35,8 @@ router.post('/connect', async function (req, res, next) {
             // sinon s'il retransmet un message depuis discord
             } else {
                 var reply = await connectChatbot.getReply(message.author, message.mess.content);
+                console.log("in rep worker message",await connectChatbot.getInfos())
+                console.log("suite : ",await connectChatbot.bot.getUservars(message.author))
                 //on lui renvoie la réponse du bot
                 connectChatbot.worker.postMessage(JSON.stringify({ 'message': message.mess, 'resp': reply }));
 
@@ -46,12 +48,13 @@ router.post('/connect', async function (req, res, next) {
 
 // on attend d'essayer de faire la connection, et on retourne un état différent
 // selon si réussite ou échec
-    waitForDiscordReady(botname, function (err) {
+    await waitForDiscordReady(botname, function (err) {
         throw new Error(err); // error handling function callback
 
-    }, function (botname) { // whenDone 
+    }, async function (botname) { // whenDone 
         var Chatbot1 = gest.getChatBotByName(botname);
-        var infos = JSON.stringify(Chatbot1.getInfos());
+        var temp = await Chatbot1.getInfos();
+        var infos = JSON.stringify(temp);
         console.log("Envoie de : "+infos)
 
         res.json(infos);
@@ -64,7 +67,8 @@ router.delete('/disconnect', async function (req, res, next) {
     var disconnectChatbot = gest.getChatBotByName(req.body.name);
     disconnectChatbot.disconnectDiscord();
 
-    var infos = JSON.stringify(disconnectChatbot.getInfos());
+    var temp = await disconnectChatbot.getInfos();
+    var infos = JSON.stringify(temp);
     console.log(infos)
 
     res.json(infos);
@@ -72,7 +76,7 @@ router.delete('/disconnect', async function (req, res, next) {
 
 
 // Attend que la connection se fasse ou échoue
-function waitForDiscordReady(botname, err, whenDone) {
+async function waitForDiscordReady(botname, err, whenDone) {
     //console.log(botname);
     var Chatbot = gest.getChatBotByName(botname);
     //console.log("in wait for disc ready"+Chatbot.etatDiscord);
@@ -82,11 +86,11 @@ function waitForDiscordReady(botname, err, whenDone) {
         return; //stop this attempt
     }else if (Chatbot.etatDiscord === -1) {
         console.log("Token does not permit valid.connection");
-        whenDone(botname);
+        await whenDone(botname);
         return;
     } else {
         console.log("Else of wait for discord :" + Chatbot.etatDiscord)
-        whenDone(botname);
+        await whenDone(botname);
         return;
     }
 }

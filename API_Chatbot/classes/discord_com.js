@@ -8,10 +8,11 @@ class DiscordCom {
 		this.token = token;
 		this.client = new Discord.Client();
 	}
-	
+	// utilisé pour les tests uniquement, voir worker
 	run() {
 		client.once('ready', () => {
 			console.log('Ready!');
+			// facultatif : change le nom du bot sur discord pour celui du bot
 			client.user.setUsername(this.botname);
 		});
 

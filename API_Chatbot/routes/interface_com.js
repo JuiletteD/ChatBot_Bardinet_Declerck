@@ -3,18 +3,18 @@ var router = express.Router();
 const Gestionnaire = require("../classes/Gestionnaire_ChatBot.js")
 
 /* GET liste de chatbots avec lesquels communiquer */
-router.get('/', function (req, res, next) {
+router.get('/', async function (req, res, next) {
     let gest = Gestionnaire.getInstance();
     newchatbot1 = gest.addNewChatBot('steeve', 'juliette');
     newchatbot2 = gest.addNewChatBot('max', 'romain');
-    chatbotlist = gest.getAllChatBotsInfos();
+    chatbotlist = await gest.getAllChatBotsInfos();
     console.log('chatbotlist =',JSON.stringify(chatbotlist));
 
     res.render('chatbotlist.ejs', { chatbotlist: chatbotlist });
 });
 
 
-router.post('/:nom', function (req, res, next) {
+router.post('/:nom', async function (req, res, next) {
     let gest = Gestionnaire.getInstance();
     newchatbot = gest.getChatBotByName(req.body.name);
 
@@ -36,8 +36,8 @@ router.post('/:nom', function (req, res, next) {
             
             let gest = Gestionnaire.getInstance();
             chatbot = gest.addNewChatBot(req.body.name, req.body.userChatting);
-            console.log(gest.getChatBotInfos(req.body.name));
-            console.log(chatbot.getInfos());
+            console.log(await gest.getChatBotInfos(req.body.name));
+            console.log(await chatbot.getInfos());
 
             let botReply = undefined;
             gest.getChatBotByName(req.body.name).bot.sortReplies();

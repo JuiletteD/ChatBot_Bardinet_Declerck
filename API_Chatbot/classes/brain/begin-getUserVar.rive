@@ -158,8 +158,8 @@
 
 /* Wildcards
    ---------
-   Human says:     I think the sky is orange.
-   Expected reply: Do you think the sky is orange a lot?
+   Human says:     I think the * is *.
+   Expected reply: Do you think the <star1> is <star2> a lot?
 */
 + i think *
 - Do you think <star> a lot?
