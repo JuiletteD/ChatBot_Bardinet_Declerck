@@ -1,4 +1,4 @@
-<%- include("./common/header.ejs"); %>
+<%- include("header.ejs"); %>
 
   <h1 style="text-align: center;">
     Gestionnaire de <%=title%>
@@ -35,18 +35,18 @@
               <li class="list-group-item">Etat de l'interface discord :
                 <% if(Chatbots[i].etatDiscord===0 ){%>
                   Non connecté
-                  <%}else if(Chatbots[i].etatDiscord===-1 ){%>
+                <%}else if(Chatbots[i].etatDiscord===-1 ){%>
                     Dernier essai de connection échoué, non connecté
-                    <%}else if(Chatbots[i].etatDiscord===2 ){ %>
+                <%}else if(Chatbots[i].etatDiscord===2 ){ %>
                       Connecté
-                      <%} %>
+                <%} %>
               </li>
               <li class="list-group-item">Cerveaux : <%=Chatbots[i].brains%>
               </li>
               <li class="list-group-item">Utilisateurs :
                 <% for(var j=0;j < Chatbots[i].login.length;j++){%>
                   <%=Chatbots[i].login[j]%>
-                    <%}%>
+                <%}%>
               </li>
               </ul>
             </div>
@@ -60,4 +60,4 @@
           <%} %>
       </div>
   </main>
-  <%- include("./common/footer.ejs"); %>
+  <%- include("footer.ejs"); %>

@@ -1,36 +1,26 @@
 var RiveScript = require("rivescript")
 
-// classe qui stocke l'utilisation de rivescript, l'accès à discord et les informations
-// des utilisateurs pour un bot, représente ce bot
 class ChatBot {
   constructor(name) {
     this.bot = new RiveScript({ utf8: true });
-    // nom du bot
     this.name = name;
-    // tableau des noms des utilisateurs
     this.login = [];
-    // cerveaux du bot
-    this.brains = ["/brain/rs-standard.rive"];
-
-    //etat de discord : 0 pas de connection; -1 erreur de connection;
+    this.etatDiscord = 0 //etat de discord : 0 pas de connection; -1 erreur de connection;
     // 1 en tentative de connection; 2 connecté
-    this.etatDiscord = 0 
-    // worker qui communique avec discord si connecté
+    this.brains = ["/brain/rs-standard.rive"];
     this.worker = null;
   }
-  // ajout d'un fichier rivescript
   async addBrains(brain) {
     this.brains.push(brain);
-    console.log("Ajout du cerveau "+this.brains+" à "+this.name);
+    console.log(this.brains);
     await this.reloadBrain();
   }
   addLogin(login) {
-    console.log("Ajout de l'utilisateur "+login+" à "+this.name);
     this.login.push(login);
   }
   getInfos() {
     var uservars = JSON.stringify(this.getAllUservars());
-    console.log("Variables utilisateurs : "+uservars);
+    console.log(uservars);
     return { 'name': this.name, 'login': this.login, 'etatDiscord': this.etatDiscord, 'brains': this.brains, 
   'uservars': uservars };
   }
@@ -45,6 +35,7 @@ class ChatBot {
     console.log("Error when loading files: " + error);
   }
   async reloadBrain() {
+    this.etatDiscord = "loading"
     var arr = []
     for (var i = 0; i < this.brains.length; i++) {
       arr.push(__dirname.concat(this.brains[i]));
@@ -62,7 +53,7 @@ class ChatBot {
     }
 
     var reply = await this.bot.reply(username, message);
-    console.log("Bot ",this.name,"> ", reply);
+    console.log("Bot>", reply);
     return reply;
   }
   async getAllUservars() {
@@ -78,7 +69,7 @@ class ChatBot {
   }
   disconnectDiscord(){
     if(this.worker!==null){
-      console.log("Disconnection de ",this.name," de discord");
+      console.log('disconnected of discord');
       this.worker.terminate();
       this.worker =  null;
       this.etatDiscord = 0;
