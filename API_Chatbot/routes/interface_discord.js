@@ -19,18 +19,23 @@ router.post('/connect', async function (req, res, next) {
         [req.body.name, req.body.token], { esm: true, execArgv: [] });
     connectChatbot.etatDiscord = ready;
 
+    // si recoit un message du worker
     connectChatbot.worker.onmessage = async function (ev) {
         try {
             message = JSON.parse(ev.data);
             console.log("MESSAGE" + ev.data);
+            // si la connection a échouée en raison du token
             if (message.error === 'An invalid token was provided.') {
                 //console.log(message.error);
                 connectChatbot.disconnectDiscord();
                 connectChatbot.etatDiscord = -1;
-            } else if (message.ready === 2) { //si le bot est pret
+            //si le bot signale qu'il est pret
+            } else if (message.ready === 2) {
                 connectChatbot.etatDiscord = 2;
+            // sinon s'il retransmet un message depuis discord
             } else {
                 var reply = await connectChatbot.getReply(message.author, message.mess.content);
+                //on lui renvoie la réponse du bot
                 connectChatbot.worker.postMessage(JSON.stringify({ 'message': message.mess, 'resp': reply }));
 
             }
@@ -40,13 +45,14 @@ router.post('/connect', async function (req, res, next) {
     };
 
 // on attend d'essayer de faire la connection, et on retourne un état différent
-// selon si réussite ouéchec
+// selon si réussite ou échec
     waitForDiscordReady(botname, function (err) {
         throw new Error(err); // error handling function callback
-    }, function (botname) { //this is whenDone in our case
+
+    }, function (botname) { // whenDone 
         var Chatbot1 = gest.getChatBotByName(botname);
         var infos = JSON.stringify(Chatbot1.getInfos());
-        console.log(infos)
+        console.log("Envoie de : "+infos)
 
         res.json(infos);
     })
@@ -64,22 +70,22 @@ router.delete('/disconnect', async function (req, res, next) {
     res.json(infos);
 });
 
-//attend que la connection se fasse ou échoue
+
+// Attend que la connection se fasse ou échoue
 function waitForDiscordReady(botname, err, whenDone) {
     //console.log(botname);
     var Chatbot = gest.getChatBotByName(botname);
     //console.log("in wait for disc ready"+Chatbot.etatDiscord);
 
     if (Chatbot.etatDiscord === 1) { // not set yet
-        setTimeout(waitForDiscordReady.bind(this,botname, null, whenDone), 100); // try again on the next event loop cycle
+        setTimeout(waitForDiscordReady.bind(this,botname, null, whenDone), 100); // try again in 100ms
         return; //stop this attempt
     }else if (Chatbot.etatDiscord === -1) {
         console.log("Token does not permit valid.connection");
         whenDone(botname);
         return;
     } else {
-        // we should have a proper data now
-        console.log("else of wait for discord" + Chatbot.etatDiscord)
+        console.log("Else of wait for discord :" + Chatbot.etatDiscord)
         whenDone(botname);
         return;
     }

@@ -1,4 +1,4 @@
-<%- include("header.ejs"); %>
+<%- include("./common/header.ejs"); %>
   <a href="/" class="btn-lg" style="padding: .0rem 0rem;">Retour</a>
   <main>
     <% var Jchatbot=JSON.parse(chatbot);%>
@@ -26,37 +26,36 @@
 
           <li class="list-group-item">
             <h5 class="font-italic">
-              Etat Discord : 
-              <%if(Jchatbot.etatDiscord ===0 || Jchatbot.etatDiscord ===-1){
-                if(Jchatbot.etatDiscord ===0 ){%>
-              Pas de connection à discord
-              <% }else{%>
-              Token invalide, la connection n'a pas pu se faire
-              <%}%>
-              
+              Discord :
+              <%if(Jchatbot.etatDiscord===0 || Jchatbot.etatDiscord===-1){ if(Jchatbot.etatDiscord===0 ){%>
+                Pas de connection à discord
+                <% }else{%>
+                  Token invalide, la connection n'a pas pu se faire
+                  <%}%>
+
             </h5>
             </br>
-           
-              <form method="post" action="/discord/connect" class="card-text">
-                <div class="form-group">
-                  <label for="token">Token :</label>
-                  <input type="text" name="token" class="form-control">
-                  <input type="hidden" name="name" value=<%=Jchatbot.name %>>
-                </div>
-                <input type="submit" value="Connecter à discord" class="btn btn-light">
-              </form>
-              <% }else if(Jchatbot.etatDiscord===2){%>
-                Connecté à discord
+
+            <form method="post" action="/discord/connect" class="card-text">
+              <div class="form-group">
+                <label for="token">Token :</label>
+                <input type="text" name="token" class="form-control">
+                <input type="hidden" name="name" value=<%=Jchatbot.name %>>
+              </div>
+              <input type="submit" value="Connecter à discord" class="btn btn-light">
+            </form>
+            <% }else if(Jchatbot.etatDiscord===2){%>
+              Connecté à discord
               </h5>
               </br>
-                <form method="post" action="/discord/disconnect" class="card-text">
-                  <div class="form-group">
-                    <input type="hidden" name="name" value=<%=Jchatbot.name %> >
-                  </div>
-                  <input type="submit" value="Déconnecter de discord" class="btn btn-danger">
+              <form method="post" action="/discord/disconnect?_method=DELETE" class="card-text">
+                <div class="form-group">
+                  <input type="hidden" name="name" value=<%=Jchatbot.name %> >
+                </div>
+                <input type="submit" value="Déconnecter de discord" class="btn btn-danger">
 
-                </form>
-                <% }%>
+              </form>
+              <% }%>
           </li>
 
           <li class="list-group-item">
@@ -65,7 +64,7 @@
             </h5>
             </br>
             <%var Jfiles=JSON.parse(files); if(Jfiles.length>0){%>
-              <form method="post" action="/gerer/addBrain" class="card-text">
+              <form method="post" action="/gerer/addBrain?_method=PUT" class="card-text">
                 <div class="form-group">
                   <label for="brain">Fichier :</label>
                   <select name="brain" class="form-control">
@@ -94,7 +93,7 @@
 
             </li>
             <li class="list-group-item">
-              <form method="post" action="/gerer/delete" class="card-text">
+              <form method="post" action="/gerer/delete?_method=DELETE" class="card-text">
                 <div class="form-group">
                   <input type="hidden" name="name" value=<%=Jchatbot.name %>>
                   <input type="submit" value="Supprimer le chatbot" class="btn btn-danger">
@@ -104,4 +103,4 @@
         </ul>
       </div>
   </main>
-  <%- include("footer.ejs"); %>
+  <%- include("./common/footer.ejs"); %>

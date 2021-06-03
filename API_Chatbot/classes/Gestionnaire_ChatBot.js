@@ -3,7 +3,7 @@ const fs = require('fs');
 
 class PrivateGestionnaire { // un singleton qui est censé rester le même
     constructor() {
-        this.chatBots = [];
+        this.chatBots = []; // les chatbots crées
     }
     getAllChatBotsInfos() {
         var resp = []
@@ -12,12 +12,12 @@ class PrivateGestionnaire { // un singleton qui est censé rester le même
         }
         return resp;
     }
-    addNewChatBot(name) {
+    addNewChatBot(name) { // ajout d'un chatbot
         var newChatbot = new ChatBot(name);
         this.chatBots.push(newChatbot);
         return newChatbot;
     }
-    removeChatBot(name) {
+    removeChatBot(name) {  //suppression d'un chatbot
         var deletedObj = null;
         for (var i = 0; i < this.chatBots.length; i++) {
             if (this.chatBots[i].name === name) {
@@ -30,7 +30,7 @@ class PrivateGestionnaire { // un singleton qui est censé rester le même
         }
         return deletedObj;
     }
-    getChatBotByName(name) {
+    getChatBotByName(name) {  // récupérer un chatbot
         var i;
         for (i = 0; i < this.chatBots.length; i++) {
             if (this.chatBots[i].name === name) {
@@ -41,15 +41,12 @@ class PrivateGestionnaire { // un singleton qui est censé rester le même
     getChatBotInfos(name) {
         return this.getChatBotByName(name).getInfos();
     }
-    getRivescriptFile() {
+    getRivescriptFile() {  // récupérer la liste des fichier rives disponible (on suppose que tous les fichiers de brain sont des fichiers rive)
         var chaine = "/brain/"
         // charge tous les fichier de brain
         var resp = []
-        // list all files in the directory
         try {
             const files = fs.readdirSync(__dirname.concat("/brain"));
-            // files object contains all files names
-            // log them on console
             files.forEach(file => {
                 resp.push(chaine.concat(file))
             });
@@ -62,7 +59,7 @@ class PrivateGestionnaire { // un singleton qui est censé rester le même
 
 }
 
-class Gestionnaire {
+class Gestionnaire {  // de l'exterieur : récupération d'une seule et même instance
     constructor() {
         throw new Error('Use Gestionnaire.getInstance()');
     }
