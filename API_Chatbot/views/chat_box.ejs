@@ -14,15 +14,14 @@
             const form = document.getElementById('sendmsg');
             const sendpop = document.getElementById('sendpop');
             const input_box = document.querySelector('input');
-            const printbutton = document.getElementById('scrollprint');
-            const scrollbutton = document.getElementById('autoscroll');
+            //const printbutton = document.getElementById('scrollprint');
+            //const scrollbutton = document.getElementById('autoscroll');
 
             window.post = function (url, data) {
                 return fetch(url, { method: "POST", body: JSON.stringify(data) });
             }
 
-            
-
+            /*
             printbutton.addEventListener("click", (e) => {
                 e.preventDefault();
                 console.log("scrollTop message =" + message_container.scrollTop + "  scrollHeight= " + message_container.scrollHeight + " clientHeight = " + message_container.clientHeight);
@@ -33,6 +32,7 @@
                 e.preventDefault();
                 scrolladjust();
             });
+            */
 
             // Example POST method implementation:
             async function postData(url = '', data = {}) {
@@ -125,8 +125,6 @@
     </script>
 
 <body onload="init()">
-    <button id="scrollprint" type="button">print scroll</button>    
-    <button id="autoscroll" type="button">auto scroll</button>
     <button id="sendpop" type="button">send pop</button>
     <% if (botReply != undefined) { %>
     <div id='botReplybox'>

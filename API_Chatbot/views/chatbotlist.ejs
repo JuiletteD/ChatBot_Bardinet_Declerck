@@ -15,7 +15,8 @@
                     </div>
 
                     <form action="/chat/<%= bot.name %>" method="post">
-                        <input type="hidden" name="login" value="<%= bot.login %>" />
+                        <%= //-- A REMPLACER PAR " %= bot.login % " %>
+                        <input type="hidden" name="login" value="Romain" />
                         <input type="hidden" name="name" value="<%= bot.name %>" />
                         <input type="hidden" name="isFirstAccess" value="yes" />
                         <input type="submit" value="chat" />

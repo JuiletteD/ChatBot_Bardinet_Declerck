@@ -17,30 +17,17 @@ const ChatbotConvoSchema = gestDB.initChatbotConvoSchema();
 
 /* GET liste de chatbots avec lesquels communiquer */
 router.get('/', async function (req, res, next) {
-    //Appel à BDD pour fetch liste de chatbot (retrouver leur nom)
-
-    /* Exemple de création d'un schéma et de son ajout à la BDD
-
-    const chatbotShort = gestDB.createChatbotShort(ChatbotShortSchema,'SteeveTest2','Julietest');
-    gestDB.saveChatbotShort(chatbotShort);
-
-    */  
     
+    /*
     const ChatbotShortList = await ChatbotShortSchema.find();
     console.log("liste des chatbots dans la bdd :" + ChatbotShortList);
+    */
     
-    
-    //
-
-    /*
     let gest = Gestionnaire.getInstance();
-    newchatbot1 = gest.addNewChatBot('steeve');
-    newchatbot2 = gest.addNewChatBot('max');
     chatbotlist = gest.getAllChatBotsInfos();
     console.log('chatbotlist =',JSON.stringify(chatbotlist));
-    */
 
-    res.render('chatbotlist.ejs', { chatbotlist: ChatbotShortList })
+    res.render('chatbotlist.ejs', { chatbotlist: chatbotlist })
 });
 
 router.post('/', async function (req, res, next) {
@@ -111,35 +98,37 @@ router.post('/:nom', async function (req, res, next) {
         try {
             
             let gest = Gestionnaire.getInstance();
-            newchatbot1 = gest.addNewChatBot(req.params.nom);
             console.log("get chatbot info = "+JSON.stringify(gest.getChatBotInfos(req.params.nom)));
             console.log("login for chatbot = "+JSON.stringify(gest.getChatBotInfos(req.params.nom).login));
 
             //On vérifie si l'utilisateur fait parti des logins listés dans les infos du bot,
             //Si ce n'est pas le cas, on l'y ajoute.
+
+            
             if (!(JSON.stringify(gest.getChatBotInfos(req.params.nom).login)).includes(req.body.userChatting)) {
                 gest.getChatBotByName(req.params.nom).addLogin(req.body.userChatting)
                 console.log("updated login for chatbot = " + JSON.stringify(gest.getChatBotInfos(req.params.nom).login))
 
                 //On fait de même dans la BDD
-                const chatbotTarg = await ChatbotShortSchema.findOne({ name: req.params.nom });
-                console.log("chatboTARG = " + chatbotTarg);
-                await gestDB.editChatbotShort(ChatbotShortSchema, req.params.nom, [req.body.userChatting]);
-
-            }
+                
+                //const chatbotTarg = await ChatbotShortSchema.findOne({ name: req.params.nom });
+                //console.log("chatboTARG = " + chatbotTarg);
+                //await gestDB.editChatbotShort(ChatbotShortSchema, req.params.nom, [req.body.userChatting]);
                 
 
+            }
+            
+            
+                
+            await gest.getChatBotByName(req.params.nom).reloadBrain();
             let botReply = undefined;
-            gest.getChatBotByName(req.params.nom).bot.sortReplies();
-            gest.getChatBotByName(req.params.nom).getReply(req.body.userChatting, req.body.userMessage).then((reply) => console.log("generated reply :" + reply));
+            gest.getChatBotByName(req.params.nom).getReply(req.body.userChatting, req.body.userMessage).then((reply) => {
+                console.log("generated reply :" + reply);
+                res.send(JSON.stringify({ 'chatbot_name': req.params.nom, 'userLogin': req.body.login, 'botReply': reply }));
+            });
             //console.log("generated chatbot reply :" + botReply);
 
-            //Ajout du message à la BDD
-            let Convo = await gestDB.createChatbotConvo(ChatbotConvoSchema, req.params.nom, req.body.userChatting, [])
-            //await Convo.updateChatbotConvo(ChatbotConvoSchema, 
-
-            //res.render('chat_box.ejs', { chatbot_name: req.params.nom, userLogin: req.body.login, botReply: "dummy reply" });
-            res.send(JSON.stringify({ 'chatbot_name': req.params.nom, 'userLogin': req.body.login, 'botReply': "dummy reply" }));
+            //res.send(JSON.stringify({ 'chatbot_name': req.params.nom, 'userLogin': req.body.login, 'botReply': JSON.stringify(botReply) }));
             
         } catch (err) {
             //console.error(err);
