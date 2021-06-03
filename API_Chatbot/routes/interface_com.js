@@ -25,7 +25,7 @@ router.post('/:nom', function (req, res, next) {
 
     //Si il s'agit du première accès à la page de tchat, le bot ne dit rien
     if(req.body.isFirstAccess=='yes'){
-        res.render('chat_box.ejs', { chatbot_name: req.params.nom , userLogin: req.body.login, botReply: undefined});
+        res.render('chat_box.ejs', { chatbot_name: req.body.name , userLogin: req.body.login, botReply: undefined});
     }
 
     //Si au contraire un message est envoyé par l'utilisateur, on le traite et on renvoie une réponse
@@ -45,11 +45,11 @@ router.post('/:nom', function (req, res, next) {
             //console.log("generated chatbot reply :" + botReply);
 
             //res.render('chat_box.ejs', { chatbot_name: req.params.nom, userLogin: req.body.login, botReply: "dummy reply" });
-            res.send(JSON.stringify({ 'chatbot_name': req.params.nom, 'userLogin': req.body.login, 'botReply': "dummy reply" }));
+            res.send(JSON.stringify({ 'chatbot_name': req.body.name, 'userLogin': req.body.login, 'botReply': "dummy reply" }));
             
         } catch (err) {
             console.error(err);
-            res.send(JSON.stringify({ 'chatbot_name': req.params.nom, 'userLogin': req.body.login, 'botReply': err }));
+            res.send(JSON.stringify({ 'chatbot_name': req.body.name, 'userLogin': req.body.login, 'botReply': err }));
         }
     }
 
