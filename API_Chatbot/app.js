@@ -10,7 +10,6 @@ var adminRouter = require('./routes/interface_admin');
 var discordRouter = require('./routes/interface_discord');
 var comRouter = require('./routes/interface_com');
 
-
 var app = express();
 
 // view engine setup

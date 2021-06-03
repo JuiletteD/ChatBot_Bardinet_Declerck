@@ -9,13 +9,14 @@
             <% chatbotlist.forEach(function(bot) { %>
                 <li>
                     <div style="display: flex;">
-                        login : <%= bot.login %>
+                        login : <%= bot.login %> 
                         nom : <%= bot.name %>    
 
                     </div>
 
                     <form action="/chat/<%= bot.name %>" method="post">
-                        <input type="hidden" name="login" value="<%= bot.login %>" />
+                        <%= //-- A REMPLACER PAR " %= bot.login % " %>
+                        <input type="hidden" name="login" value="Romain" />
                         <input type="hidden" name="name" value="<%= bot.name %>" />
                         <input type="hidden" name="isFirstAccess" value="yes" />
                         <input type="submit" value="chat" />
@@ -26,6 +27,23 @@
                 </li>
             <% }); %>
         </ul>
+
+        <form action="/chat" method="post">
+            <input type="hidden" name="action" value="eraseDB" />
+            <input type="submit" value="erase DB" />
+        </form>
+        <form action="/chat" method="post">
+            <input type="hidden" name="action" value="createBot" />
+            <input type="submit" value="create bot" />
+        </form>
+        <form action="/chat" method="post">
+            <input type="hidden" name="action" value="editBot" />
+            <input type="submit" value="edit bot" />
+        </form>
+        <form action="/chat" method="post">
+            <input type="hidden" name="action" value="printBrain" />
+            <input type="submit" value="print brain" />
+        </form>
     </div>
 
 </body>
