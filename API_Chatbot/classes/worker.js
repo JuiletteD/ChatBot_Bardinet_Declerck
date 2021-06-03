@@ -22,7 +22,9 @@ onmessage = async function (ev) {
 
 disc.client.once('ready', () => {
     console.log('Ready!');
+    postMessage(JSON.stringify({'ready':2}));
     disc.client.user.setUsername(disc.botname);
+
 });
 
 disc.client.on('message', async message => {

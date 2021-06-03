@@ -18,11 +18,11 @@
       </div>
     </div>
 
-      <% var Chatbots=JSON.parse(chatbots); if(Chatbots.length>0){
-        %>
-        <h5 class="">Mes ChatBots</h5>
+    <% var Chatbots=JSON.parse(chatbots); if(Chatbots.length>0){
+      %>
+      <h5 class="">Mes ChatBots</h5>
 
-        <div class="d-flex align-content-start flex-wrap">
+      <div class="d-flex align-content-start flex-wrap">
 
         <%} for (var i=0; i < Chatbots.length; i++) { %>
           </br>
@@ -32,11 +32,21 @@
             </h5>
             <div class="card-body text-secondary">
               <ul class="list-group"></ul>
-              <li class="list-group-item">Utilisateur : <%=Chatbots[i].login%>
-              </li>
-              <li class="list-group-item">Etat : <%=Chatbots[i].etat%>
+              <li class="list-group-item">Etat de l'interface discord :
+                <% if(Chatbots[i].etatDiscord===0 ){%>
+                  Non connecté
+                <%}else if(Chatbots[i].etatDiscord===-1 ){%>
+                    Dernier essai de connection échoué, non connecté
+                <%}else if(Chatbots[i].etatDiscord===2 ){ %>
+                      Connecté
+                <%} %>
               </li>
               <li class="list-group-item">Cerveaux : <%=Chatbots[i].brains%>
+              </li>
+              <li class="list-group-item">Utilisateurs :
+                <% for(var j=0;j < Chatbots[i].login.length;j++){%>
+                  <%=Chatbots[i].login[j]%>
+                <%}%>
               </li>
               </ul>
             </div>
@@ -48,6 +58,6 @@
             </div>
           </div>
           <%} %>
-    </div>
+      </div>
   </main>
   <%- include("footer.ejs"); %>

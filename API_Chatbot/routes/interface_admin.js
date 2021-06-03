@@ -6,7 +6,6 @@ var router = express.Router();
 router.get('/chatbots', function (req, res, next) {
     let gest = Gestionnaire.getInstance();
     chatbots = gest.getAllChatBotsInfos();
-    console.log(chatbots)
 
     res.json(JSON.stringify(chatbots));
 });
@@ -17,7 +16,7 @@ router.post('/creer', function (req, res, next) {
     let gest = Gestionnaire.getInstance();
     newchatbot = gest.addNewChatBot(req.body.name);
     var infos = JSON.stringify(newchatbot.getInfos());
-    console.log(infos);
+    console.log("infos de creees :"+infos);
 
     res.json(infos);
 });
@@ -42,6 +41,7 @@ router.post('/chatbot', function (req, res, next) {
             isin = false
         }
     }
+
     res.json(JSON.stringify({ 'files': JSON.stringify(resp), 'chatbot': JSON.stringify(chatbotInfos) }));
 });
 
@@ -51,6 +51,7 @@ router.put('/addBrain', async function (req, res, next) {
     let gest = Gestionnaire.getInstance();
     var chatbot = gest.getChatBotByName(req.body.name);
     var hasBrain = false;
+    // on vérifie si le cerveau à ajouter n'existe pas déjà
     for (var j = 0; j < chatbot.brains.length; j++) {
         if (req.body.brain === chatbot.brains[j]) {
             hasBrain = true;
@@ -59,11 +60,12 @@ router.put('/addBrain', async function (req, res, next) {
     if (req.body.brain === undefined) {
         console.log("undefined !");
     } else if (hasBrain) {
-        console.log("hasBrain !");
+        console.log("already hasBrain !"+req.body.brain);
     } else {
         await chatbot.addBrains(req.body.brain);
     }
 
+    // on recherge les informations du bot et du dossier des fichiers rivescript
     var chatbotnewInfos = chatbot.getInfos()
     var files = gest.getRivescriptFile();
     var resp = []
@@ -90,11 +92,12 @@ router.delete('/delete', async function (req, res, next) {
     let gest = Gestionnaire.getInstance();
     var deletedChatbot = gest.removeChatBot(req.body.name);
     var deletedInfos = ""
+    
     if (deletedChatbot !== null) {
         deletedInfos = JSON.stringify(deletedChatbot.getInfos());
         res.json(JSON.stringify({ 'succes': "true", 'chatbot': deletedInfos }));
     } else {
-        deletedInfos("Chatbot not found !");
+        deletedInfos("Chatbot not found !"+req.body.name);
         res.json(JSON.stringify({ 'succes': "false", 'chatbot': null }));
     }
 });

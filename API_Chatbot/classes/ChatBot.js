@@ -5,7 +5,8 @@ class ChatBot {
     this.bot = new RiveScript({ utf8: true });
     this.name = name;
     this.login = [];
-    this.etat = "idle"
+    this.etatDiscord = 0 //etat de discord : 0 pas de connection; -1 erreur de connection;
+    // 1 en tentative de connection; 2 connecté
     this.brains = ["/brain/rs-standard.rive"];
     this.worker = null;
   }
@@ -19,7 +20,8 @@ class ChatBot {
   }
   getInfos() {
     var uservars = JSON.stringify(this.getAllUservars());
-    return { 'name': this.name, 'login': this.login, 'etat': this.etat, 'brains': this.brains, 
+    console.log(uservars);
+    return { 'name': this.name, 'login': this.login, 'etatDiscord': this.etatDiscord, 'brains': this.brains, 
   'uservars': uservars };
   }
   loading_done() {
@@ -27,14 +29,13 @@ class ChatBot {
 
     // Now the replies must be sorted!
     this.bot.sortReplies();
-    this.etat = "idle";
 
   }
   loading_error(error, filename, lineno) {
     console.log("Error when loading files: " + error);
   }
   async reloadBrain() {
-    this.etat = "loading"
+    this.etatDiscord = "loading"
     var arr = []
     for (var i = 0; i < this.brains.length; i++) {
       arr.push(__dirname.concat(this.brains[i]));
@@ -60,12 +61,10 @@ class ChatBot {
     for(var i=0;i<this.login.length;i++){
       vars.push(await this.bot.getUservars(this.login[i]));
     }
-    //console.log(vars);
     return vars;
   }
   async getUservars(username) {
     var vars = await this.bot.getUservars(username);
-    console.log(vars);
     return vars;
   }
   disconnectDiscord(){
@@ -73,7 +72,7 @@ class ChatBot {
       console.log('disconnected of discord');
       this.worker.terminate();
       this.worker =  null;
-      this.etat = 'idle';
+      this.etatDiscord = 0;
     }
   }
 }
