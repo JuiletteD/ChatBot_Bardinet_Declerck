@@ -17,12 +17,6 @@ const ChatbotConvoSchema = gestDB.initChatbotConvoSchema();
 
 /* GET liste de chatbots avec lesquels communiquer */
 router.get('/', async function (req, res, next) {
-<<<<<<< HEAD
-    let gest = Gestionnaire.getInstance();
-    newchatbot1 = gest.addNewChatBot('steeve', 'juliette');
-    newchatbot2 = gest.addNewChatBot('max', 'romain');
-    chatbotlist = await gest.getAllChatBotsInfos();
-=======
     
     /*
     const ChatbotShortList = await ChatbotShortSchema.find();
@@ -31,7 +25,6 @@ router.get('/', async function (req, res, next) {
     
     let gest = Gestionnaire.getInstance();
     chatbotlist = gest.getAllChatBotsInfos();
->>>>>>> f1a76d74a338ec7f9521682c2ed119fd878b3754
     console.log('chatbotlist =',JSON.stringify(chatbotlist));
 
     res.render('chatbotlist.ejs', { chatbotlist: chatbotlist })
@@ -43,11 +36,6 @@ router.post('/', async function (req, res, next) {
         await ChatbotShortSchema.deleteMany({});
         await ChatbotBrainSchema.deleteMany({});
 
-<<<<<<< HEAD
-router.post('/:nom', async function (req, res, next) {
-    let gest = Gestionnaire.getInstance();
-    newchatbot = gest.getChatBotByName(req.body.name);
-=======
     } else if (req.body.action == "createBot") {
         const chatbotShort = gestDB.createChatbotShort(ChatbotShortSchema, 'SteeveTest2', ['Julietest']);
         await gestDB.saveChatbotShort(chatbotShort);
@@ -89,7 +77,6 @@ router.post('/:nom', async function (req, res, next) {
     });
     
     
->>>>>>> f1a76d74a338ec7f9521682c2ed119fd878b3754
 
 });
 
@@ -111,14 +98,8 @@ router.post('/:nom', async function (req, res, next) {
         try {
             
             let gest = Gestionnaire.getInstance();
-<<<<<<< HEAD
-            chatbot = gest.addNewChatBot(req.body.name, req.body.userChatting);
-            console.log(await gest.getChatBotInfos(req.body.name));
-            console.log(await chatbot.getInfos());
-=======
             console.log("get chatbot info = "+JSON.stringify(gest.getChatBotInfos(req.params.nom)));
             console.log("login for chatbot = "+JSON.stringify(gest.getChatBotInfos(req.params.nom).login));
->>>>>>> f1a76d74a338ec7f9521682c2ed119fd878b3754
 
             //On vérifie si l'utilisateur fait parti des logins listés dans les infos du bot,
             //Si ce n'est pas le cas, on l'y ajoute.
