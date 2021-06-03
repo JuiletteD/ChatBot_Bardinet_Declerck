@@ -60,7 +60,7 @@ class ChatBot {
     for(var i=0;i<this.login.length;i++){
       vars.push(await this.bot.getUservars(this.login[i]));
     }
-    console.log(vars);
+    //console.log(vars);
     return vars;
   }
   async getUservars(username) {

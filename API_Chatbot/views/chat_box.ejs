@@ -12,6 +12,7 @@
             const message_container = document.getElementById('chatbox');
             const chat_container = document.getElementById('chat_container');
             const form = document.getElementById('sendmsg');
+            const sendpop = document.getElementById('sendpop');
             const input_box = document.querySelector('input');
             const printbutton = document.getElementById('scrollprint');
             const scrollbutton = document.getElementById('autoscroll');
@@ -47,7 +48,7 @@
                     },
                     redirect: 'follow', // manual, *follow, error
                     referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-                    body: JSON.stringify({data, userChatting: "<%=userLogin%>", isFirstAccess: "no"}) // body data type must match "Content-Type" header
+                    body: JSON.stringify({data, userChatting: "<%= userLogin %>", isFirstAccess: "no"}) // body data type must match "Content-Type" header
                 });
                 return response.json(); // parses JSON response into native JavaScript objects
             }
@@ -55,13 +56,25 @@
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
                 selfReply(input_box.value)
-                postData('http://localhost:3000/chat/<%= chatbot_name %>', { answer: 42 })
+                postData('http://localhost:3000/chat/<%= chatbot_name %>', { message : input_box.value})
                     .then(data => {
                         console.log("result data.botReply = " + data.botReply)
                         botReply(data.botReply);
                     });
                 
                 
+            });
+
+            sendpop.addEventListener("click", (e) => {
+                e.preventDefault();
+                selfReply("pop")
+                postData('http://localhost:3000/chat/<%= chatbot_name %>', { message: input_box.value })
+                    .then(data => {
+                        console.log("result data.botReply = " + data.botReply)
+                        botReply(data.botReply);
+                    });
+
+
             });
 
             function botReply(message) {  
@@ -114,6 +127,7 @@
 <body onload="init()">
     <button id="scrollprint" type="button">print scroll</button>    
     <button id="autoscroll" type="button">auto scroll</button>
+    <button id="sendpop" type="button">send pop</button>
     <% if (botReply != undefined) { %>
     <div id='botReplybox'>
         <%= botReply %>
