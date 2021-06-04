@@ -16,8 +16,8 @@
             <form method="post" action="http://localhost:3000/chat/<%=Jchatbot.name%>" class="card-text">
               <div class="form-group">
                 <label for="login">Login :</label>
-                <input type="hidden" name="name" value=<%=Jchatbot.name %>>
-                <input type="hidden" name="status" value="firstAccess" />
+                <input type="hidden" name="name" value="<%=Jchatbot.name %>">
+                <input type="hidden" name="isFirstAccess" value="yes" />
                 <input type="text" name="login" class="form-control">
               </div>
               <input type="submit" value="Ouvrir" class="btn btn-light">
@@ -40,6 +40,8 @@
               <div class="form-group">
                 <label for="token">Token :</label>
                 <input type="text" name="token" class="form-control">
+                <label for="token">Prefix :</label>
+                <input type="text" name="prefix" class="form-control">
                 <input type="hidden" name="name" value=<%=Jchatbot.name %>>
               </div>
               <input type="submit" value="Connecter à discord" class="btn btn-light">
