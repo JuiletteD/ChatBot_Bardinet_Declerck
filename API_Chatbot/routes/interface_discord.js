@@ -1,12 +1,20 @@
 var express = require('express');
 var Worker = require("tiny-worker");
 var path = require('path');
-const Gestionnaire = require("../classes/Gestionnaire_ChatBot.js")
+const Gestionnaire = require("../classes/Gestionnaire_ChatBot.js");
+
+const { check, validationResult } = require('express-validator');
+var loginSanitize = [check('name').trim().escape()];
+
 var router = express.Router();
 let gest = Gestionnaire.getInstance();
 
 /* POST connecter à discord. */
-router.post('/connect', async function (req, res, next) {
+router.post('/connect',loginSanitize, async function (req, res, next) {
+    const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+    throw new Error(errors);
+	}
     var botname = req.body.name
     var connectChatbot = gest.getChatBotByName(botname);
     var ready = 1;
@@ -16,7 +24,7 @@ router.post('/connect', async function (req, res, next) {
 
     // Création du worker
     connectChatbot.worker = new Worker(workerPath,
-        [req.body.name, req.body.token], { esm: true, execArgv: [] });
+        [req.body.name, req.body.token, req.body.prefix], { esm: true, execArgv: [] });
     connectChatbot.etatDiscord = ready;
 
     // si recoit un message du worker
@@ -63,7 +71,11 @@ router.post('/connect', async function (req, res, next) {
 
 
 /* POST déconnecter discord. */
-router.delete('/disconnect', async function (req, res, next) {
+router.delete('/disconnect',loginSanitize, async function (req, res, next) {
+    const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+    throw new Error(errors);
+	}
     var disconnectChatbot = gest.getChatBotByName(req.body.name);
     disconnectChatbot.disconnectDiscord();
 

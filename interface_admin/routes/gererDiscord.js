@@ -1,20 +1,26 @@
 var express = require('express');
 const fetch = require('node-fetch');
 var methodOverride = require('method-override');
-
+const { check, validationResult } = require('express-validator');
+var connectSanitize = [check('name').trim().escape()]
 var router = express.Router();
 
 // override with POST having ?_method=DELETE
 router.use(methodOverride('_method'));
 
 /* POST creer un accès au ChatBot. */
-router.post('/connect', async function (req, res, next) {
+router.post('/connect',connectSanitize, async function (req, res, next) {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+    throw new Error(errors);
+	}
 
 	const response = await fetch('http://localhost:3000/discord/connect', {
 		method: "POST",
 		body: JSON.stringify({
 			name: req.body.name,
-			token: req.body.token
+			token: req.body.token,
+			prefix: req.body.prefix
 		}),
 		headers: {
 			"Content-type": "application/json",
@@ -34,8 +40,11 @@ router.post('/connect', async function (req, res, next) {
 
 
 /* DELETE déconnecter chatbot. */
-router.delete('/disconnect', async function (req, res, next) {
-	console.log(req.body.name)
+router.delete('/disconnect',connectSanitize, async function (req, res, next) {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+    throw new Error(errors);
+	}
 
 	const response = await fetch('http://localhost:3000/discord/disconnect', {
 		method: "DELETE",

@@ -1,5 +1,8 @@
 var express = require('express');
-const Gestionnaire = require("../classes/Gestionnaire_ChatBot.js")
+const Gestionnaire = require("../classes/Gestionnaire_ChatBot.js");
+const { check, validationResult } = require('express-validator');
+var loginSanitize = [check('name').trim().escape()];
+
 var router = express.Router();
 
 /* GET recuperer tous les chatbots. */
@@ -11,9 +14,12 @@ router.get('/chatbots', async function (req, res, next) {
     res.json(JSON.stringify(chatbots));
 });
 
-
 /* POST creer chatbot. */
-router.post('/creer', async function (req, res, next) {
+router.post('/creer', loginSanitize, async function (req, res, next) {
+    const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+    throw new Error(errors);
+	}
     let gest = Gestionnaire.getInstance();
     newchatbot = gest.addNewChatBot(req.body.name);
     var temp = await newchatbot.getInfos();
@@ -24,7 +30,11 @@ router.post('/creer', async function (req, res, next) {
 });
 
 /* POST acceder chatbot. */
-router.post('/chatbot', async function (req, res, next) {
+router.post('/chatbot', loginSanitize, async function (req, res, next) {
+    const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+    throw new Error(errors);
+	}
     let gest = Gestionnaire.getInstance();
     var chatbotInfos = await gest.getChatBotInfos(req.body.name);
     var files = gest.getRivescriptFile();
@@ -48,7 +58,12 @@ router.post('/chatbot', async function (req, res, next) {
 });
 
 /* PUT ajouter un cerveau. */
-router.put('/addBrain', async function (req, res, next) {
+router.put('/addBrain', loginSanitize, async function (req, res, next) {
+    const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+    throw new Error(errors);
+	}
+
     console.log("add :", req.body.brain, " to :", req.body.name);
     let gest = Gestionnaire.getInstance();
     var chatbot = gest.getChatBotByName(req.body.name);
@@ -89,7 +104,11 @@ router.put('/addBrain', async function (req, res, next) {
 });
 
 /* DELETE un chatbot. */
-router.delete('/delete', async function (req, res, next) {
+router.delete('/delete', loginSanitize, async function (req, res, next) {
+    const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+    throw new Error(errors);
+	}
     console.log("delete : ", req.body.name)
     let gest = Gestionnaire.getInstance();
     var deletedChatbot = gest.removeChatBot(req.body.name);

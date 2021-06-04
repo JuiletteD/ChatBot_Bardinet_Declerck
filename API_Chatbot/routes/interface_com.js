@@ -27,7 +27,7 @@ router.get('/', async function (req, res, next) {
     chatbotlist = gest.getAllChatBotsInfos();
     console.log('chatbotlist =',JSON.stringify(chatbotlist));
 
-    res.render('chatbotlist.ejs', { chatbotlist: chatbotlist })
+    res.render('chatbotlist.ejs', { chatbotlist: chatbotlist})
 });
 
 router.post('/', async function (req, res, next) {
