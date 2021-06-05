@@ -29,7 +29,7 @@ class ChatBot {
   addLogin(login) {
     console.log("Ajout de l'utilisateur "+login+" à "+this.name);
     this.login.push(login);
-    this.loginInfo.push({'login':login, 'name': 'unknown', 'age': 0, 'like': 'unknown'});
+    this.loginInfo.push({'login':login, 'name': 'unknown', 'age': -1, 'like': 'unknown'});
   }
   async getInfos() {
     await this.getAllUservars();

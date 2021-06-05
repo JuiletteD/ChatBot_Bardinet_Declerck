@@ -1,141 +1,109 @@
 const ChatBot = require("./ChatBot.js");
 const Gestionnaire_ChatBot = require("./Gestionnaire_ChatBot.js");
-const mongoose = require('mongoose');
-const BotNameLogin = require('./models/BotNameLogin.js');
+var DbConnection = require("./connect-mongodb");
+const CollectionChatbot = "ChatbotDB";
 
 class DBGestionnaire {
-    constructor() {
-        this.url = "mongodb+srv://rbardinet:chatbot2021@chatbotcluster.dxxc0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-        console.log("call DBGestionnaire.init() next");
+    constructor(data) {
+
+    }
+    async addItem(collection, data) {
+        try {
+            let db = await DbConnection.Get();
+            var dbo = db.db(CollectionChatbot);
+
+            var result = await dbo.collection(collection).insertOne(data);
+            console.log("item cree :" + JSON.stringify(result.ops));
+            return result.result.ok;
+        } catch (e) {
+            return e;
+        }
     }
 
-    testPrint() {
-        console.log("testprint from gestionnaire_DB")
+    async getAllItem(collection) {
+        let db = await DbConnection.Get();
+        var dbo = db.db(CollectionChatbot);
+
+        var tabItems = await dbo.collection(collection).find({}).toArray();
+        return tabItems;
     }
 
-    init() {
-        console.log("DBGestionnaire.init() is being called");
-        mongoose
-            .connect(this.url, { useNewUrlParser: true })
-        const db = mongoose.connection
-        db.once('open', _ => {
-            console.log('Database connected:', this.url)
-        })
-        db.on('error', err => {
-            console.error('connection error:', err)
-        })
 
-        return db;
+    async getJoueur(pseudoT) {
+        let db = await DbConnection.Get();
+        var dbo = db.db(CollectionChatbot);
+
+        var query = { pseudo: pseudoT };
+        var joueur = await dbo.collection("joueurs").findOne(query);
+        console.log("joueur selectionné : " + JSON.stringify(joueur));
+        return joueur;
     }
 
-    async findBotNameLogins() {
-        const docs = await BotNameLogin.find();
-        return docs
+    async getItem(collection, query) {
+        let db = await DbConnection.Get();
+        var dbo = db.db(CollectionChatbot);
+
+        var item = await dbo.collection(collection).findOne(query);
+        console.log("item selectionné : " + JSON.stringify(item));
+        return item;
     }
 
-    async createBotNameLogins(name, logins) {
-        const newdoc = new BotNameLogin({
-            name: name,
-            login: logins,
-        })
-        await newdoc.save()
-    }
-        
+    async connectWithPseudo(password, Reqpseudo) {
+        let db = await DbConnection.Get();
+        var dbo = db.db(CollectionChatbot);
 
-    initChatbotShortSchema() {
-        const Schema = mongoose.Schema
-        const schema = new Schema({
-            name: { type: String, unique: true },
-            login: Array
-        })
-        return mongoose.model('Chatbot_Short', schema)
+        var query = { pseudo: Reqpseudo };
+        var joueur = await dbo.collection("joueurs").findOne(query);
+        var j = JSON.stringify(joueur);
+
+        return JSON.parse(j).password === password;
     }
 
-    initChatbotConvoSchema() {
-        const Schema = mongoose.Schema
-        const schema = new Schema({
-            name: { type: String, unique: true },
-            login: { type: String, unique: true },
-            messages: Array
-        })
-        return mongoose.model('Chatbot_Convos', schema)
+    async connectWithEmail(password, Reqemail) {
+        let db = await DbConnection.Get();
+        var dbo = db.db(CollectionChatbot);
+
+        var query = { email: Reqemail };
+        var joueur = await dbo.collection("joueurs").findOne(query);
+        var j = JSON.stringify(joueur);
+
+        return JSON.parse(j).password === password;
     }
 
-    createChatbotConvo(ChatbotConvoSchema, name, login, message) {
+    async deleteItem(collection, query) {
+        let db = await DbConnection.Get();
+        var dbo = db.db(CollectionChatbot);
 
-        const ChatbotShort = new ChatbotConvoSchema({
-            name: name,
-            login: login,
-            messages: messages
-        })
+        var item = await dbo.collection(collection).deleteOne(query);
+        console.log("item supprimé : " + JSON.stringify(item));
+        return JSON.stringify(item);
+    }
+    async deleteItemMany(collection, query) {
+        let db = await DbConnection.Get();
+        var dbo = db.db(CollectionChatbot);
 
-        return ChatbotShort
+        var item = await dbo.collection(collection).deleteOne(query);
+        console.log("item supprimé : " + JSON.stringify(item));
+        return JSON.stringify(item);
     }
 
-    async updateChatbotConvo(ChatbotConvoSchema, name, login, message) {
-        targetDocument = await ChatbotConvoSchema.findOne({ name: name , login: login});
+    async updateItem(collection, query, newvalues, create) {
+        let db = await DbConnection.Get();
+        var dbo = db.db(CollectionChatbot);
 
-        targetDocument.messages.push(message);
-        await targetDocument.save();
-        
+        //    var newvalues = { $set: { pseudo: joueur.pseudo, password: joueur.password, email: joueur.email } };
+        var upitem = await dbo.collection(collection).updateOne(query, newvalues, { upsert: create });
+        console.log("update : " + JSON.stringify(upitem));
+        return upitem.result.ok;
     }
 
-    initChatbotInfosSchema() {
-        const Schema = mongoose.Schema
-        const schema = new Schema({
-            bot : "lol",
-            name: { type: String, unique: true },
-            login: { type: String, unique: true },
-            messages: Array
-        })
-        return mongoose.model('Chatbot_Infos', schema)
+    async deleteAll(collection) {
+        let db = await DbConnection.Get();
+        var dbo = db.db(CollectionChatbot);
+
+        var res = await dbo.collection(collection).deleteMany({});
+        return res.result.ok;
     }
-
-    initChatbotBrainSchema() {
-        const Schema = mongoose.Schema
-        const schema = new Schema({
-            name: { type: String, unique: true },
-            file: { type: String }
-        })
-        return mongoose.model('Brains', schema)
-    }
-
-    createChatbotShort(ChatbotShortSchema,name,login) {
-
-        const ChatbotShort = new ChatbotShortSchema({
-            name: name,
-            login: login
-        })
-
-        return ChatbotShort
-    }
-
-    createChatbotBrain(ChatbotBrainSchema, name, file) {
-
-        const ChatbotBrain = new ChatbotBrainSchema({
-            name: name,
-            file: file
-        })
-
-        return ChatbotBrain
-    }
-
-    async saveChatbotShort(shortChatBot) {
-        await shortChatBot.save(function (error, document) {
-            if (error) console.error(error)
-            console.log(document)
-        })
-    }
-
-    //login doit être un ARRAY
-    async editChatbotShort(shortChatBot,name,login) {
-        const targetChatBot = await shortChatBot.findOne({ name: name });
-        targetChatBot.login = login;
-
-        const doc = await targetChatBot.save();
-        console.log(doc);
-    }
-
 
 }
 

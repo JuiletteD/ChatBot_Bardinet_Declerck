@@ -1,82 +1,81 @@
 var express = require('express');
 var router = express.Router();
-const Gestionnaire = require("../classes/Gestionnaire_ChatBot.js")
-const DBGestionnaire = require("../classes/Gestionnaire_DB.js")
+var methodOverride = require('method-override');
+router.use(methodOverride('_method'));
+const Gestionnaire = require("../classes/Gestionnaire_ChatBot.js");
+const DBGestionnaire = require("../classes/Gestionnaire_DB.js");
+const BotNameLoginVar4DB = require("../classes/models/BotNameLoginVar.js");
+const MongoDBCollection = "chatbot_logins_uservar"
 
-var fs = require('fs')
-var Binary = require('mongodb').Binary;
+var fs = require('fs');
 
 let gestDB = new DBGestionnaire;
-const db = gestDB.init();
-
-//Le schéma doit être compilé une unique fois
-const ChatbotShortSchema = gestDB.initChatbotShortSchema();
-const ChatbotBrainSchema = gestDB.initChatbotBrainSchema();
-const ChatbotConvoSchema = gestDB.initChatbotConvoSchema();
-
 
 /* GET liste de chatbots avec lesquels communiquer */
 router.get('/', async function (req, res, next) {
-    
-    /*
-    const ChatbotShortList = await ChatbotShortSchema.find();
-    console.log("liste des chatbots dans la bdd :" + ChatbotShortList);
-    */
-    
+     
     let gest = Gestionnaire.getInstance();
-    chatbotlist = gest.getAllChatBotsInfos();
+    chatbotlist = await gest.getAllChatBotsInfos();
     console.log('chatbotlist =',JSON.stringify(chatbotlist));
 
     res.render('chatbotlist.ejs', { chatbotlist: chatbotlist })
 });
 
 router.post('/', async function (req, res, next) {
+    let gest = Gestionnaire.getInstance();
     if (req.body.action == "eraseDB") {
-        console.log("ERASING DBBDBDBDBBDBDDBDB")
-        await ChatbotShortSchema.deleteMany({});
-        await ChatbotBrainSchema.deleteMany({});
+        console.log("ERASING DBBDBDBDBBDBDDBDB");
+        try {
+            var chatbot2db = await gestDB.deleteAll(MongoDBCollection);
+            if (!chatbot2db) {
+                console.log("error! ");
+                throw new Error('MAJ echouee');
+            } else {
+                console.log("erased db");
+            }
 
+        } catch (e) {
+            console.log("error :" + e.message);
+            res.json(JSON.stringify({ error: e.message }));
+        }
+
+        
     } else if (req.body.action == "createBot") {
-        const chatbotShort = gestDB.createChatbotShort(ChatbotShortSchema, 'SteeveTest2', ['Julietest']);
-        await gestDB.saveChatbotShort(chatbotShort);
+        let infos = await gest.getChatBotInfos("nuv");
+        console.log("infos collected = " + JSON.stringify(infos));
+        let bot4db = {};
+        bot4db.name = infos.name;
+        bot4db.loginInfo = infos.loginInfo;
+        try {
+            var chatnot2db = await gestDB.addItem(MongoDBCollection, bot4db);
+            if (!chatnot2db) {
+                console.log("error! ");
+                throw new Error('MAJ echouee');
+            } else {
+                console.log("data sent");
+            }
+
+        } catch (e) {
+            console.log("error :" + e.message);
+            res.json(JSON.stringify({ error: e.message }));
+        }
         
     } else if (req.body.action == "editBot") {
-        const chatbotTarg = await ChatbotShortSchema.findOne({ name: 'SteeveTest2' });
-        console.log("chatboTARG = " + chatbotTarg);
-        await gestDB.editChatbotShort(ChatbotShortSchema, 'SteeveTest2', ['romaintest']);
+
+        var chatbot = await gestDB.updateItem(MongoDBCollection, { name: "nuv" }, { $set: { loginInfo: [{ "login": "nuvgan" }]  } }, false);
+        if (!chatbot) {
+            console.log("error! ");
+            throw new Error('MAJ echouee');
+        }
 
     } else if (req.body.action == "printBrain") {
-        let gest = Gestionnaire.getInstance();
-        newchatbot1 = gest.addNewChatBot('steeve');
-        console.log(gest.getAllChatBotsInfos());
-        console.log(gest.getRivescriptFile());
-        let filename = "./classes/" + gest.getRivescriptFile()[0];
-        let data = fs.readFile(filename, 'utf8', function (err, data) {
-            if (err) throw err;
-            console.log('OK: ' + filename);
-            console.log(JSON.stringify(data))
-        });
-        let insert_data = {};
-        insert_data.file_data = Binary(data);
-
-        const brain = gestDB.createChatbotBrain(ChatbotBrainSchema, gest.getRivescriptFile()[0], JSON.stringify(data));
-        await gestDB.saveChatbotShort(brain);
-        /*
-        db.collection('Brains').insert(data, function (err, result) {
-            console.log(result)
-        });
-        */
+    
     }
+    
+    chatbotlist = await gest.getAllChatBotsInfos();
+    console.log('chatbotlist =', JSON.stringify(chatbotlist));
 
-    ChatbotBrainSchema.find().then(Brainlist => {
-        console.log("brains in the DB = " + Brainlist)
-    });
-    ChatbotShortSchema.find().then(ChatbotShortList => {
-        res.render('chatbotlist.ejs', { chatbotlist: ChatbotShortList });
-        console.log("liste des chatbots dans la bdd :" + ChatbotShortList);
-    });
-    
-    
+    res.render('chatbotlist.ejs', { chatbotlist: chatbotlist })
 
 });
 
@@ -86,7 +85,7 @@ router.post('/:nom', async function (req, res, next) {
     console.log("req = "+JSON.stringify(req.body)+JSON.stringify(req.params))
 
     //Si il s'agit du première accès à la page de tchat, le bot ne dit rien
-    if(req.body.isFirstAccess=='yes'){
+    if(req.body.isFirstAccess == 'yes'){
         res.render('chat_box.ejs', { chatbot_name: req.body.name , userLogin: req.body.login, botReply: undefined});
     }
 
@@ -98,41 +97,15 @@ router.post('/:nom', async function (req, res, next) {
         try {
             
             let gest = Gestionnaire.getInstance();
-            console.log("get chatbot info = "+JSON.stringify(gest.getChatBotInfos(req.params.nom)));
-            console.log("login for chatbot = "+JSON.stringify(gest.getChatBotInfos(req.params.nom).login));
-
-            //On vérifie si l'utilisateur fait parti des logins listés dans les infos du bot,
-            //Si ce n'est pas le cas, on l'y ajoute.
-
+            let chatbot = gest.getChatBotByName(req.params.nom);
             
-            if (!(JSON.stringify(gest.getChatBotInfos(req.params.nom).login)).includes(req.body.userChatting)) {
-                gest.getChatBotByName(req.params.nom).addLogin(req.body.userChatting)
-                console.log("updated login for chatbot = " + JSON.stringify(gest.getChatBotInfos(req.params.nom).login))
-
-                //On fait de même dans la BDD
-                
-                //const chatbotTarg = await ChatbotShortSchema.findOne({ name: req.params.nom });
-                //console.log("chatboTARG = " + chatbotTarg);
-                //await gestDB.editChatbotShort(ChatbotShortSchema, req.params.nom, [req.body.userChatting]);
-                
-
-            }
-            
-            
-                
-            await gest.getChatBotByName(req.params.nom).reloadBrain();
-            let botReply = undefined;
-            gest.getChatBotByName(req.params.nom).getReply(req.body.userChatting, req.body.userMessage).then((reply) => {
-                console.log("generated reply :" + reply);
-                res.send(JSON.stringify({ 'chatbot_name': req.params.nom, 'userLogin': req.body.login, 'botReply': reply }));
-            });
-            //console.log("generated chatbot reply :" + botReply);
-
-            //res.send(JSON.stringify({ 'chatbot_name': req.params.nom, 'userLogin': req.body.login, 'botReply': JSON.stringify(botReply) }));
-            
+            await chatbot.reloadBrain();
+            var reply = await chatbot.getReply(req.body.userChatting, req.body.userMessage);
+            console.log("generated reply :" + reply);
+            res.send(JSON.stringify({ 'chatbot_name': req.params.nom, 'userLogin': req.body.login, 'botReply': reply }));
+        
         } catch (err) {
-            //console.error(err);
-            //res.send(JSON.stringify({ 'chatbot_name': req.params.nom, 'userLogin': req.body.login, 'botReply': err }));
+            console.error(err);
         }
     }
 
