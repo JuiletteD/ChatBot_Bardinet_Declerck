@@ -24,7 +24,7 @@ class PrivateGestionnaire { // un singleton qui est censé rester le même
             if (this.chatBots[i].name === name) {
                 deletedObj = this.chatBots[i];
                 this.chatBots.splice(i, 1);
-                if(deletedObj.worker !== null){
+                if (deletedObj.worker !== null) {
                     deletedObj.disconnectDiscord();
                 }
             }
@@ -59,7 +59,6 @@ class PrivateGestionnaire { // un singleton qui est censé rester le même
 
         return resp;
     }
-
 }
 
 class Gestionnaire {  // de l'exterieur : récupération d'une seule et même instance

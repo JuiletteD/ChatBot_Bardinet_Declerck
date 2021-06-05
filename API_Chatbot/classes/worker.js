@@ -6,6 +6,7 @@ var myArgs = process.argv.slice(2);
 
 var botname = myArgs[0];
 var token = myArgs[1];
+var prefix = myArgs[2];
 
 var disc = new DiscordCom(botname, token);
 
@@ -27,14 +28,14 @@ disc.client.once('ready', () => {
     console.log(disc.botname, 'is ready!');
     postMessage(JSON.stringify({'ready':2}));
     // facultatif : change le nom du bot sur discord pour celui du bot
-    disc.client.user.setUsername(disc.botname);
+    //disc.client.user.setUsername(disc.botname);
 
 });
 
 // quand recoit un message du serveur, le renvoie au thread principal
 disc.client.on('message', async message => {
     //console.log(JSON.stringify(message.author.username));
-    if (message.author.bot === false) {
+    if (message.author.bot === false  && message.content.startsWith(prefix)) {
         //console.log(JSON.stringify(message))
         postMessage(JSON.stringify({ 'mess': message, 'author': message.author.username }));
     }
