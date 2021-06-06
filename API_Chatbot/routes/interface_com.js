@@ -193,7 +193,7 @@ router.post('/:nom', async function (req, res, next) {
             let chatbot = gest.getChatBotByName(req.params.nom);
             
             await chatbot.reloadBrain();
-            var reply = await chatbot.getReply(req.body.userChatting, req.body.userMessage);
+            var reply = await chatbot.getReply(req.body.userChatting, req.body.data.userMessage);
             console.log("generated reply :" + reply);
             res.send(JSON.stringify({ 'chatbot_name': req.params.nom, 'userLogin': req.body.login, 'botReply': reply }));
         

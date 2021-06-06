@@ -73,7 +73,7 @@ a {
   max-width: 60%;
   text-align: right;
   margin-left: auto;
-  background: #DDD
+  background: #DDD;
  }
 
  .flex-container {
@@ -97,7 +97,7 @@ a {
 
 .selfimg{
   position: relative;
-  top: 37px;
+  top: 39px;
   left: 35px;
   float:right;
 }

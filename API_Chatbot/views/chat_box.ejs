@@ -22,8 +22,9 @@
             }
 
             // Example POST method implementation:
-            async function postData(url = '', data = {}) {
+            async function postData(url = '',data) {
                 // Default options are marked with *
+                console.log('data to be sent : ',data);
                 const response = await fetch(url, {
                     method: 'POST', // *GET, POST, PUT, DELETE, etc.
                     mode: 'cors', // no-cors, *cors, same-origin
@@ -35,15 +36,16 @@
                     },
                     redirect: 'follow', // manual, *follow, error
                     referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-                    body: JSON.stringify({data, userChatting: "<%= userLogin %>", isFirstAccess: "no"}) // body data type must match "Content-Type" header
+                    body: JSON.stringify({data, userChatting: "<%= userLogin %>", isFirstAccess : "no"}) // body data type must match "Content-Type" header
                 });
                 return response.json(); // parses JSON response into native JavaScript objects
             }
 
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
-                selfReply(input_box.value)
-                postData('http://localhost:3000/chat/<%= chatbot_name %>', { message : input_box.value})
+                userMsg = input_box.value;
+                selfReply(userMsg)
+                postData('http://localhost:3000/chat/<%= chatbot_name %>', {userMessage : userMsg})
                     .then(data => {
                         console.log("result data.botReply = " + data.botReply)
                         botReply(data.botReply);
