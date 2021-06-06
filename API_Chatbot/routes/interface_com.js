@@ -22,7 +22,10 @@ router.get('/', async function (req, res, next) {
 });
 
 router.post('/', async function (req, res, next) {
+    console.log('post on /chat req.body =', JSON.stringify(req.body));
+
     let gest = Gestionnaire.getInstance();
+    //RAZ DE LA BDD
     if (req.body.action == "eraseDB") {
         console.log("ERASING DBBDBDBDBBDBDDBDB");
         try {
@@ -39,7 +42,7 @@ router.post('/', async function (req, res, next) {
             res.json(JSON.stringify({ error: e.message }));
         }
 
-        
+    //ENVOIE d'UN BOT EN BDD   
     } else if (req.body.action == "createBot") {
         let infos = await gest.getChatBotInfos("nuv");
         console.log("infos collected = " + JSON.stringify(infos));
@@ -59,7 +62,53 @@ router.post('/', async function (req, res, next) {
             console.log("error :" + e.message);
             res.json(JSON.stringify({ error: e.message }));
         }
+
+    //SAUVEGARDE DANS BDD
+    } else if (req.body.data!== undefined && req.body.data.save2db) {
+        try {
+            //récupération de données dans le cache de l'api
+            let infos = await gest.getChatBotInfos(req.body.data.botname);
+            console.log("infos collected = " + JSON.stringify(infos));
+            
+
+            //verifier si bot dans db
+            console.log("bot demandé = " + req.body.data.botname);
+    
+            var b = await gestDB.getBot(req.body.data.botname);
+
+            //si bot inexistant, il faut le creer
+            if (!b) {
+                console.log('bot inexistant : '+req.body.data.botname);
+
+                let bot4db = {};
+                bot4db.name = infos.name;
+                bot4db.loginInfo = infos.loginInfo;
+
+                var chatnot2db = await gestDB.addItem(MongoDBCollection, bot4db);
+                if (!chatnot2db) {
+                    console.log("error! ");
+                    throw new Error('ajout bot echoué');
+                } else {
+                    console.log("bot ajouté");
+                }
+
+            } else {
+                var chatbot = await gestDB.updateItem(MongoDBCollection, { name: req.body.data.botname }, { $set: { loginInfo: infos.loginInfo  } }, false);
+                    if (!chatbot) {
+                        console.log("error! ");
+                        throw new Error('MAJ echouee');
+                    }
+            }
+
+            res.json(JSON.stringify({ 'error': 'no error' , 'mongodbstatus' :'success' }));
+
+        } catch (e) {
+            console.log("error :" + e.message);
+            res.json(JSON.stringify({ error: e.message }));
+        }
+
         
+    //MODIFICATION d"UN BOT     
     } else if (req.body.action == "editBot") {
 
         var chatbot = await gestDB.updateItem(MongoDBCollection, { name: "nuv" }, { $set: { loginInfo: [{ "login": "nuvgan" }]  } }, false);
@@ -68,15 +117,59 @@ router.post('/', async function (req, res, next) {
             throw new Error('MAJ echouee');
         }
 
+    //AFFICHAGE DANS LA CONSOLE DU BOT'NUV'
     } else if (req.body.action == "printBrain") {
+
+        try {
+            console.log("bot demandé =" + 'nuv');
     
+            var b = await gestDB.getBot('nuv');
+
+            if (!b) {
+                console.log("error! ");
+                throw new Error('joueur pas trouvÃ© : '+'nuv');
+            }
+
+            console.log('bot.loginInfo ='+JSON.stringify(b.loginInfo));
+            
+        } catch (e) {
+            console.log("error :" + e.message);
+        }
+    
+    
+
+    //AFFICHAGE DANS LA CONSOLE DES BOTS DANS LA BDD
+    } else if (req.body.action == "printAll") {
+
+        try {
+            console.log("bot demandé =" + 'ALL');
+
+            var bs = await gestDB.getAllBots(MongoDBCollection);
+
+            if (!bs) {
+                console.log("error! ");
+                throw new Error('pas de bot en bdd');
+            }
+
+            console.log('bots ='+JSON.stringify(bs));
+            
+        } catch (e) {
+            console.log("error :" + e.message);
+        }
+
+    } 
+    
+    //AFFICHAGE DE LA PAGE EJS
+    if(req.body.data==undefined) {
+
+        chatbotlist = await gest.getAllChatBotsInfos();
+        console.log('chatbotlist =', JSON.stringify(chatbotlist));
+
+        res.render('chatbotlist.ejs', { chatbotlist: chatbotlist })
+
+
     }
     
-    chatbotlist = await gest.getAllChatBotsInfos();
-    console.log('chatbotlist =', JSON.stringify(chatbotlist));
-
-    res.render('chatbotlist.ejs', { chatbotlist: chatbotlist })
-
 });
 
 

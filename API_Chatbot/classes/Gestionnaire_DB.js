@@ -1,7 +1,8 @@
 const ChatBot = require("./ChatBot.js");
 const Gestionnaire_ChatBot = require("./Gestionnaire_ChatBot.js");
 var DbConnection = require("./connect-mongodb");
-const CollectionChatbot = "ChatbotDB";
+const DatabaseChatBot = "ChatbotDB";
+const MongoDBCollection = "chatbot_logins_uservar"
 
 class DBGestionnaire {
     constructor(data) {
@@ -10,7 +11,7 @@ class DBGestionnaire {
     async addItem(collection, data) {
         try {
             let db = await DbConnection.Get();
-            var dbo = db.db(CollectionChatbot);
+            var dbo = db.db(DatabaseChatBot);
 
             var result = await dbo.collection(collection).insertOne(data);
             console.log("item cree :" + JSON.stringify(result.ops));
@@ -20,28 +21,28 @@ class DBGestionnaire {
         }
     }
 
-    async getAllItem(collection) {
+    async getAllBots(collection) {
         let db = await DbConnection.Get();
-        var dbo = db.db(CollectionChatbot);
+        var dbo = db.db(DatabaseChatBot);
 
         var tabItems = await dbo.collection(collection).find({}).toArray();
         return tabItems;
     }
 
 
-    async getJoueur(pseudoT) {
+    async getBot(botname) {
         let db = await DbConnection.Get();
-        var dbo = db.db(CollectionChatbot);
+        var dbo = db.db(DatabaseChatBot);
 
-        var query = { pseudo: pseudoT };
-        var joueur = await dbo.collection("joueurs").findOne(query);
-        console.log("joueur selectionné : " + JSON.stringify(joueur));
-        return joueur;
+        var query = { name: botname };
+        var bot = await dbo.collection(MongoDBCollection).findOne(query);
+        console.log("joueur selectionné : " + JSON.stringify(bot));
+        return bot;
     }
 
     async getItem(collection, query) {
         let db = await DbConnection.Get();
-        var dbo = db.db(CollectionChatbot);
+        var dbo = db.db(DatabaseChatBot);
 
         var item = await dbo.collection(collection).findOne(query);
         console.log("item selectionné : " + JSON.stringify(item));
@@ -50,7 +51,7 @@ class DBGestionnaire {
 
     async connectWithPseudo(password, Reqpseudo) {
         let db = await DbConnection.Get();
-        var dbo = db.db(CollectionChatbot);
+        var dbo = db.db(DatabaseChatBot);
 
         var query = { pseudo: Reqpseudo };
         var joueur = await dbo.collection("joueurs").findOne(query);
@@ -61,7 +62,7 @@ class DBGestionnaire {
 
     async connectWithEmail(password, Reqemail) {
         let db = await DbConnection.Get();
-        var dbo = db.db(CollectionChatbot);
+        var dbo = db.db(DatabaseChatBot);
 
         var query = { email: Reqemail };
         var joueur = await dbo.collection("joueurs").findOne(query);
@@ -72,7 +73,7 @@ class DBGestionnaire {
 
     async deleteItem(collection, query) {
         let db = await DbConnection.Get();
-        var dbo = db.db(CollectionChatbot);
+        var dbo = db.db(DatabaseChatBot);
 
         var item = await dbo.collection(collection).deleteOne(query);
         console.log("item supprimé : " + JSON.stringify(item));
@@ -80,7 +81,7 @@ class DBGestionnaire {
     }
     async deleteItemMany(collection, query) {
         let db = await DbConnection.Get();
-        var dbo = db.db(CollectionChatbot);
+        var dbo = db.db(DatabaseChatBot);
 
         var item = await dbo.collection(collection).deleteOne(query);
         console.log("item supprimé : " + JSON.stringify(item));
@@ -89,7 +90,7 @@ class DBGestionnaire {
 
     async updateItem(collection, query, newvalues, create) {
         let db = await DbConnection.Get();
-        var dbo = db.db(CollectionChatbot);
+        var dbo = db.db(DatabaseChatBot);
 
         //    var newvalues = { $set: { pseudo: joueur.pseudo, password: joueur.password, email: joueur.email } };
         var upitem = await dbo.collection(collection).updateOne(query, newvalues, { upsert: create });
@@ -99,7 +100,7 @@ class DBGestionnaire {
 
     async deleteAll(collection) {
         let db = await DbConnection.Get();
-        var dbo = db.db(CollectionChatbot);
+        var dbo = db.db(DatabaseChatBot);
 
         var res = await dbo.collection(collection).deleteMany({});
         return res.result.ok;

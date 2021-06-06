@@ -13,6 +13,7 @@
             const chat_container = document.getElementById('chat_container');
             const form = document.getElementById('sendmsg');
             const sendpop = document.getElementById('sendpop');
+            const save2db = document.getElementById('save2db');
             const input_box = document.querySelector('input');
             //const printbutton = document.getElementById('scrollprint');
             //const scrollbutton = document.getElementById('autoscroll');
@@ -68,11 +69,29 @@
             sendpop.addEventListener("click", (e) => {
                 e.preventDefault();
                 selfReply("pop")
+                /*
                 postData('http://localhost:3000/chat/<%= chatbot_name %>', { message: input_box.value })
                     .then(data => {
                         console.log("result data.botReply = " + data.botReply)
                         botReply(data.botReply);
                     });
+                */
+
+                //A SUPPRIMMER
+                botReply("pop back");
+                //A SUPPRIMMER
+
+
+            });
+
+            save2db.addEventListener("click", (e) => {
+                e.preventDefault();
+                postData('http://localhost:3000/chat/', { save2db: true , botname: '<%= chatbot_name %>'});
+                    /*
+                    .then(data => {
+                        console.log("result from bot api = " + data.mongodbstatus)
+                    });
+                    */
 
 
             });
@@ -125,21 +144,30 @@
     </script>
 
 <body onload="init()">
-    <button id="sendpop" type="button">send pop</button>
-    <% if (botReply != undefined) { %>
-    <div id='botReplybox'>
-        <%= botReply %>
-    </div>
-    <% } %>
-    <div id='chat_container' class=chat>
-        <div id=chatbox class=messages></div>
-        <div id=edge></div>
+
+    <div>
+
+        <div>
+            <button id="sendpop" type="button">send pop</button>
+            <button id="save2db" type="button">upload convo to database</button>
+        </div>
         
+        <div id='chat_container' class=chat>
+    
+            <div id=chatbox class=messages></div>
+            <div id=edge></div>
+    
+        </div>
+    
         <form id="sendmsg" class="actions" action="/chat/<%= chatbot_name %>" method="POST">
-            <input type=text placeholder="press ‘Enter’ to send…" name="userMessage">
+                
+            <input type=text class="form-control" placeholder="press ‘Enter’ to send." name="userMessage">
             <input type="hidden" name="status" value="notFirstAccess" />
+            
         </form>
+
     </div>
+    
 
 </body>
 
