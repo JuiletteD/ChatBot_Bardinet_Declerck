@@ -10,6 +10,8 @@
     <script>
         function init(){
 
+            
+
             const message_container = document.getElementById('chatbox');
             const chat_container = document.getElementById('chat_container');
             const form = document.getElementById('sendmsg');
@@ -67,9 +69,16 @@
             });
 
             function botReply(message) {  
-                let scrollIsPossible = scrollpossible();              
+                let scrollIsPossible = scrollpossible();
+                var d = new Date(); 
+                let hour = d.getHours()
+                let mints = d.getMinutes()
+                if(mints<10){
+                    mints = '0'+mints.toString();
+                }
                 message_container.innerHTML += `
-                <img src="/images/botpfp.png" alt="Avatar" class="botimg" width="25" height="29"><div class=bot><%= chatbot_name %></div>
+                <img src="/images/botpfp.gif" alt="Avatar" class="botimg" width="40" height="40">
+                <div class=bot><b class=topita><%= chatbot_name %></b> - ${hour}h${mints}min</div>
                 <div class=botm>${message}</div>
                 
                 `;
@@ -81,13 +90,17 @@
             function selfReply(message) {
                 //On regarde si l'utilisateur est en bas de la page de messages
                 let scrollIsPossible = scrollpossible();
-                console.log(scrollIsPossible);
                 //Si il faut scroll, alors on scroll en bas, apres envoie du message
-            
+                var d = new Date(); 
+                let hour = d.getHours()
+                let mints = d.getMinutes()
+                if(mints<10){
+                    mints = '0'+mints.toString();
+                }
 
                 message_container.innerHTML += `
-                <img src="/images/selfpfp.png" alt="Avatar" class="selfimg" width="30" height="35">
-                <div class=self>you</div>
+                <img src="/images/selfpfp.gif" alt="Avatar" class="selfimg" width="35" height="35">
+                <div class=self><b class=topita>you</b> - ${hour}h${mints}min</div>
                     <div class=selfm>${message}</div>`;
 
                 if (scrollIsPossible==true) {
