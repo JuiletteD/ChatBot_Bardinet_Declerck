@@ -40,37 +40,6 @@ class DBGestionnaire {
         return bot;
     }
 
-    async getItem(collection, query) {
-        let db = await DbConnection.Get();
-        var dbo = db.db(DatabaseChatBot);
-
-        var item = await dbo.collection(collection).findOne(query);
-        console.log("item selectionné : " + JSON.stringify(item));
-        return item;
-    }
-
-    async connectWithPseudo(password, Reqpseudo) {
-        let db = await DbConnection.Get();
-        var dbo = db.db(DatabaseChatBot);
-
-        var query = { pseudo: Reqpseudo };
-        var joueur = await dbo.collection("joueurs").findOne(query);
-        var j = JSON.stringify(joueur);
-
-        return JSON.parse(j).password === password;
-    }
-
-    async connectWithEmail(password, Reqemail) {
-        let db = await DbConnection.Get();
-        var dbo = db.db(DatabaseChatBot);
-
-        var query = { email: Reqemail };
-        var joueur = await dbo.collection("joueurs").findOne(query);
-        var j = JSON.stringify(joueur);
-
-        return JSON.parse(j).password === password;
-    }
-
     async deleteItem(collection, query) {
         let db = await DbConnection.Get();
         var dbo = db.db(DatabaseChatBot);
@@ -79,6 +48,7 @@ class DBGestionnaire {
         console.log("item supprimé : " + JSON.stringify(item));
         return JSON.stringify(item);
     }
+    
     async deleteItemMany(collection, query) {
         let db = await DbConnection.Get();
         var dbo = db.db(DatabaseChatBot);

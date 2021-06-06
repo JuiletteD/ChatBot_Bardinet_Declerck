@@ -12,10 +12,12 @@ a {
   font-size: 12pt;
  }
  .chat {
-  width: 400px;
-  height: 50%;
-  position: fixed;
-  overflow: scroll;
+  padding: 50px;
+  margin: 2px;
+  width: 99.5%;
+  height: 80%;
+  box-shadow: 0 0 0 1pt rgb(128, 121, 131);
+  overflow-y: scroll;
  }
  .actions {
   position: absolute;
@@ -33,26 +35,69 @@ a {
   border-right: 1;
  }
  .messages div {
-  max-width: 60%;
+  
   display: block;
   margin: 5px;
   padding: 10px;
   border-radius: 7px;
  }
- .messages .bot {
+ .messages .botm {
+  max-width: 60%;
   text-align: left;
   margin-right: auto;
-  background: #001f3f;
+  background: #363138;
   color: white;
  }
+
+ .messages .bot {
+  max-width: 15%;
+  text-align: left;
+  font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
+
+  position: relative;
+  top: 15px;
+ }
+
  .messages .self {
+  max-width: 15%;
+  margin-left: auto;
+  text-align: right;
+  font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
+
+  position: relative;
+  top: 15px;
+  left: 12px;
+ }
+
+ .messages .selfm {
+  max-width: 60%;
   text-align: right;
   margin-left: auto;
   background: #DDD
  }
 
- .global1 {
-  display: flex;
+ .flex-container {
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  height: 100%;
+  
+}
+
+.form-container {
+  padding: 20px;
+  
+}
+
+/* Style images */
+.botimg{
+  position: relative;
+  top: 80px;
+  right: 35px;
+}
+
+.selfimg{
+  position: relative;
+  top: 37px;
+  left: 35px;
+  float:right;
 }
