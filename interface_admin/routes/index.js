@@ -8,13 +8,12 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', async function (req, res, next) {
-
   const response = await fetch('http://localhost:3000/admin/chatbots');
   const data = await response.json();
   console.log("Chatbots received :" + data);
 
 
-  res.render('index', { title: 'Chatbot', chatbots: data });
+  res.render('index', { title: 'Chatbot', chatbots: data, msg : '' });
 });
 
 /* POST voir les infos login. */
