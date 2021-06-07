@@ -106,7 +106,7 @@ class ChatBot {
     this.bot.setUservar(username,'name',userVars2Add.name);
     this.bot.setUservar(username,'age',userVars2Add.age);
     this.bot.setUservar(username,'like',userVars2Add.like);
-    console.log('ajout des uservars '+JSON.stringify(userVars2Add)+' à '+username)
+    //console.log('ajout des uservars '+JSON.stringify(userVars2Add)+' à '+username)
   }
 
 

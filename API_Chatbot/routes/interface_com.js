@@ -5,10 +5,7 @@ router.use(methodOverride('_method'));
 const Gestionnaire = require("../classes/Gestionnaire_ChatBot.js");
 const DBGestionnaire = require("../classes/Gestionnaire_DB.js");
 const BotNameLoginVar4DB = require("../classes/models/BotNameLoginVar.js");
-const MongoDBCollection = "chatbot_logins_uservar"
-
-var fs = require('fs');
-const ChatBot = require('../classes/ChatBot.js');
+const MongoDBCollection = "chatbot_logins_uservar";
 
 let gestDB = new DBGestionnaire;
 
@@ -112,7 +109,6 @@ router.post('/', async function (req, res, next) {
     } else if (req.body.action == "printAll") {
 
         try {
-            console.log("bot demandé =" + 'ALL');
 
             var bs = await gestDB.getAllBots(MongoDBCollection);
 
@@ -121,7 +117,7 @@ router.post('/', async function (req, res, next) {
                 throw new Error('pas de bot en bdd');
             }
 
-            console.log('bots ='+JSON.stringify(bs));
+            console.log('bots retrieved from Mongo DB ='+JSON.stringify(bs));
             
         } catch (e) {
             console.log("error :" + e.message);
@@ -146,62 +142,75 @@ router.post('/', async function (req, res, next) {
     } else if (req.body.action == "loadBdd") {
 
         try {
-            console.log("bot demandé =" + 'ALL');
 
             var bs = await gestDB.getAllBots(MongoDBCollection);
+            var ondiskBots = await gest.getAllChatBotsInfos();
+            let ondiskBotsNAMES = [];
+            ondiskBots.forEach(element => {ondiskBotsNAMES.push(element.name)});
+
 
             if (!bs) {
                 console.log("error! ");
                 throw new Error('pas de bot en bdd');
             }
-
-            console.log('bots ='+JSON.stringify(bs));
+            
+            console.log('retrieving bots from MongoDB');
+            bs.forEach((element,index)=>{
+                console.log('bot n0 '+index+' = '+element);
+                console.log('||')
+            })
 
             bs.forEach(async (element) => {
 
-                //CREATION DU BOT
-                let chatbot = await gest.addNewChatBot(element.name);
+                if(ondiskBotsNAMES.includes(element.name)){
+                    console.log('Bot named '+element.name+' is already in local files !');
+                }else{
+                    //CREATION DU BOT
+                    let chatbot = await gest.addNewChatBot(element.name);
 
-                //AJOUT LOGININFO              
-                
-                element.loginInfo.forEach(async (loginInfo1,index) => {
+                    //AJOUT LOGININFO              
                     
-                    //PARTIE BOT RIVESCRIPT
-                    //await chatbot.setUservars(loginInfo1.login,{'name':loginInfo1.name,'age':loginInfo1.age,'like':loginInfo1.like});
-                    await chatbot.setUservars(loginInfo1.login,loginInfo1);
+                    element.loginInfo.forEach(async (loginInfo1,index) => {
+                        
+                        //PARTIE BOT RIVESCRIPT
+                        //await chatbot.setUservars(loginInfo1.login,{'name':loginInfo1.name,'age':loginInfo1.age,'like':loginInfo1.like});
+                        await chatbot.setUservars(loginInfo1.login,loginInfo1);
+                        
+                        //PARTIE CLASS CHATBOT
+                        chatbot.login.push(loginInfo1.login);
+                        chatbot.loginInfo.push(loginInfo1);
+
+
+                    })
+
+                    //AJOUT ETATDISCORD
+                    chatbot.etatDiscord = element.etatDiscord;
                     
-                    //PARTIE CLASS CHATBOT
-                    chatbot.login.push(loginInfo1.login);
-                    chatbot.loginInfo.push(loginInfo1);
+                    let finalbot = JSON.stringify(await chatbot.getInfos())
+                    console.log('bot ajoute ='+finalbot)
 
+                    //AJOUT CERVEAUX
+                    var hasBrain = false;
 
-                })
-
-                //AJOUT ETATDISCORD
-                chatbot.etatDiscord = element.etatDiscord;
-                
-                let finalbot = JSON.stringify(await chatbot.getInfos())
-                console.log('bot ajoute ='+finalbot)
-
-                //AJOUT CERVEAUX
-                var hasBrain = false;
-
-                element.brains.forEach(async (brain) => {
-                    // on vérifie si le cerveau à ajouter n'existe pas déjà
-                    for (var j = 0; j < chatbot.brains.length; j++) {
-                        if (brain === chatbot.brains[j]) {
-                            hasBrain = true;
+                    element.brains.forEach(async (brain) => {
+                        // on vérifie si le cerveau à ajouter n'existe pas déjà
+                        for (var j = 0; j < chatbot.brains.length; j++) {
+                            if (brain === chatbot.brains[j]) {
+                                hasBrain = true;
+                            }
                         }
-                    }
-                    if (brain === undefined) {
-                        console.log("brain is undefined !");
-                    } else if (hasBrain) {
-                        console.log(element.name+" already hasBrain !"+brain);
-                    } else {
-                        await chatbot.addBrains(brain);
-                    }
-                    hasBrain = false
-                })
+                        if (brain === undefined) {
+                            console.log("brain is undefined !");
+                        } else if (hasBrain) {
+                            console.log(element.name+" already hasBrain !"+brain);
+                        } else {
+                            await chatbot.addBrains(brain);
+                        }
+                        hasBrain = false
+                    });
+                }
+
+                
                 
             });
 
