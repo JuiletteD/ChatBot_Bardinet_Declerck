@@ -4,7 +4,7 @@ var path = require('path');
 
 var chatbot = new ChatBot("rferfe", "refrefe");
 var botname = "my bot is so cool";
-var token =  "r"//"ODQ3MDgxOTI0NDA5Mjk0ODQ4.YK44hA.tGfRawfQY_xErHkei8cAlkoq_fo";
+var token =  "r";
 var workerPath = path.join(__dirname, '..', '/worker.js');
 var worker = new Worker(workerPath,[botname,token], { esm: true, execArgv: []});
 
