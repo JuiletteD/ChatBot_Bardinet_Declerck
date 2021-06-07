@@ -12,7 +12,7 @@ router.use(methodOverride('_method'));
 router.post('/connect',connectSanitize, async function (req, res, next) {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
+		next(new Error(errors.errors[0].msg));
 	}
 
 	const response = await fetch('http://localhost:3000/discord/connect', {
@@ -43,7 +43,7 @@ router.post('/connect',connectSanitize, async function (req, res, next) {
 router.delete('/disconnect',connectSanitize, async function (req, res, next) {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
+		next(new Error(errors.errors[0].msg));
 	}
 
 	const response = await fetch('http://localhost:3000/discord/disconnect', {

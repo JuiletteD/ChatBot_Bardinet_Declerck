@@ -2,13 +2,14 @@ const ChatBot = require("./ChatBot.js");
 var chatbot = new ChatBot();
 
 const Discord = require('discord.js');
+// sert à la communication avec discord, stocke les informations de connection
 class DiscordCom {
 	constructor(botname, token) {
 		this.botname = botname;
 		this.token = token;
 		this.client = new Discord.Client();
 	}
-	// utilisé pour les tests uniquement, voir worker
+	// utilisé pour les tests uniquement, voir worker pour l'implémentation réelle
 	run() {
 		client.once('ready', () => {
 			console.log('Ready!');

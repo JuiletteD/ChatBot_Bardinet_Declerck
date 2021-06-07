@@ -13,7 +13,7 @@ let gest = Gestionnaire.getInstance();
 router.post('/connect',loginSanitize, async function (req, res, next) {
     const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
+        next(new Error(errors.errors[0].msg));
 	}
     var botname = req.body.name
     var connectChatbot = gest.getChatBotByName(botname);
@@ -74,7 +74,7 @@ router.post('/connect',loginSanitize, async function (req, res, next) {
 router.delete('/disconnect',loginSanitize, async function (req, res, next) {
     const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
+        next(new Error(errors.errors[0].msg));
 	}
     var disconnectChatbot = gest.getChatBotByName(req.body.name);
     disconnectChatbot.disconnectDiscord();

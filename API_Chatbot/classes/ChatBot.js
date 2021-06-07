@@ -26,12 +26,13 @@ class ChatBot {
     console.log("Ajout du cerveau "+this.brains+" à "+this.name);
     await this.reloadBrain();
   }
+  // ajout d'un utilisateur dans les utilisateurs du bot
   addLogin(login) {
     console.log("Ajout de l'utilisateur "+login+" à "+this.name);
     this.login.push(login);
     this.loginInfo.push({'login':login, 'name': 'unknown', 'age': -1, 'like': 'unknown'});
   }
-
+  // renvoie les informations du bot en json
   async getInfos() {
     await this.getAllUservars();
   
@@ -39,6 +40,7 @@ class ChatBot {
   'loginInfo': this.loginInfo };
   }
 
+  // Quand le fichier rivescript a fini de charger
   loading_done() {
     console.log("Bot has finished loading!");
 
@@ -49,16 +51,18 @@ class ChatBot {
   loading_error(error, filename, lineno) {
     console.log("Error when loading files: " + error);
   }
+
+  // recharge les fichiers rivescript
   async reloadBrain() {
     var arr = []
     for (var i = 0; i < this.brains.length; i++) {
       arr.push(__dirname.concat(this.brains[i]));
     }
-
     await this.bot.loadFile(arr);
     this.loading_done();
   }
 
+  // Renvoie la réponse du bot à un message
   async getReply(username, message) {
     //add user to list if not exists
     //maybe change to higher up to not check every time like here
@@ -70,6 +74,8 @@ class ChatBot {
     console.log("Bot ",this.name,"> ", reply);
     return reply;
   }
+
+  // renvoie toutes les informations de tous les utilisateurs du bot
   async getAllUservars() {
     var vars = [];
     for(var i=0;i < this.login.length;i++){
@@ -78,10 +84,10 @@ class ChatBot {
     }
     //stocke les nouvelles informations dans loginInfos
     this.loginInfo = vars;
-
     return this.loginInfo;
   }
 
+  // renvoie les informations d'un utilisateur
   async getUservars(username) {
     var vars = await this.bot.getUservars(username);
 
@@ -111,7 +117,7 @@ class ChatBot {
 
 
 
-
+// déconnecte le chatbot de discord
   disconnectDiscord(){
     if(this.worker!==null){
       console.log("Disconnection de ",this.name," de discord");
