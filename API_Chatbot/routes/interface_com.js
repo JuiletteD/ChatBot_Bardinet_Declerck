@@ -12,7 +12,7 @@ let gestDB = new DBGestionnaire;
 
 /* GET liste de chatbots avec lesquels communiquer */
 router.get('/', async function (req, res, next) {
-     
+    console.log('get on /chat req.body =', JSON.stringify(req.body));
     let gest = Gestionnaire.getInstance();
     chatbotlist = await gest.getAllChatBotsInfos();
     console.log('chatbotlist =',JSON.stringify(chatbotlist));
@@ -26,7 +26,7 @@ router.post('/', async function (req, res, next) {
     let gest = Gestionnaire.getInstance();
     //RAZ DE LA BDD
     if (req.body.action == "eraseDB") {
-        console.log("ERASING DBBDBDBDBBDBDDBDB");
+        console.log("ERASING MongoDB FILES");
         try {
             var chatbot2db = await gestDB.deleteAll(MongoDBCollection);
             if (!chatbot2db) {
@@ -58,7 +58,7 @@ router.post('/', async function (req, res, next) {
             res.json(JSON.stringify({ error: e.message }));
         }
 
-    //SAUVEGARDE DANS BDD
+    //SAUVEGARDE UNITAIRE DANS BDD MONGO
     } else if (req.body.data!== undefined && req.body.data.save2db) {
         try {
             //récupération de données dans le cache de l'api
@@ -104,7 +104,7 @@ router.post('/', async function (req, res, next) {
             res.json(JSON.stringify({ error: e.message }));
         }
 
-    //SAUVEGARDE DANS BDD MONGO
+    //SAUVEGARDE GENERALE DANS BDD MONGO
     } else if (req.body.action == 'local2mongoDB') {
         try {            
             //On supprime les données existantes en BDD
@@ -176,7 +176,7 @@ router.post('/', async function (req, res, next) {
         }
 
 
-    //LOAD ALL BOTS DANS LA BDD
+    //LOAD ALL BOTS DEPUIS MONDODB DANS LA BDD LOCAL
     } else if (req.body.action == "loadBdd") {
 
         try {
@@ -204,49 +204,56 @@ router.post('/', async function (req, res, next) {
                     console.log('Bot named '+element.name+' is already in local files !');
                 }else{
                     //CREATION DU BOT
-                    let chatbot = await gest.addNewChatBot(element.name);
+                    let chatbot_ok = await gest.addNewChatBot(element.name);
+                    if(chatbot_ok==0){
 
-                    //AJOUT LOGININFO              
+                        let chatbot = await gest.getChatBotByName(element.name);
+
+                        //AJOUT LOGININFO              
                     
-                    element.loginInfo.forEach(async (loginInfo1,index) => {
-                        
-                        //PARTIE BOT RIVESCRIPT
-                        //await chatbot.setUservars(loginInfo1.login,{'name':loginInfo1.name,'age':loginInfo1.age,'like':loginInfo1.like});
-                        await chatbot.setUservars(loginInfo1.login,loginInfo1);
-                        
-                        //PARTIE CLASS CHATBOT
-                        chatbot.login.push(loginInfo1.login);
-                        chatbot.loginInfo.push(loginInfo1);
+                        element.loginInfo.forEach(async (loginInfo1,index) => {
+                            
+                            //PARTIE BOT RIVESCRIPT
+                            //await chatbot.setUservars(loginInfo1.login,{'name':loginInfo1.name,'age':loginInfo1.age,'like':loginInfo1.like});
+                            await chatbot.setUservars(loginInfo1.login,loginInfo1);
+                            
+                            //PARTIE CLASS CHATBOT
+                            chatbot.login.push(loginInfo1.login);
+                            chatbot.loginInfo.push(loginInfo1);
 
 
-                    })
+                        })
 
-                    //AJOUT ETATDISCORD
-                    chatbot.etatDiscord = element.etatDiscord;
+                        //AJOUT ETATDISCORD
+                        chatbot.etatDiscord = element.etatDiscord;
 
-                    //AJOUT CERVEAUX
-                    var hasBrain = false;
+                        //AJOUT CERVEAUX
+                        var hasBrain = false;
 
-                    element.brains.forEach(async (brain) => {
-                        // on vérifie si le cerveau à ajouter n'existe pas déjà
-                        for (var j = 0; j < chatbot.brains.length; j++) {
-                            if (brain === chatbot.brains[j]) {
-                                hasBrain = true;
+                        element.brains.forEach(async (brain) => {
+                            // on vérifie si le cerveau à ajouter n'existe pas déjà
+                            for (var j = 0; j < chatbot.brains.length; j++) {
+                                if (brain === chatbot.brains[j]) {
+                                    hasBrain = true;
+                                }
                             }
-                        }
-                        if (brain === undefined) {
-                            console.log("brain is undefined !");
-                        } else if (hasBrain) {
-                            console.log(element.name+" already hasBrain !"+brain);
-                        } else {
-                            await chatbot.addBrains(brain);
-                        }
-                        hasBrain = false
-                    });
+                            if (brain === undefined) {
+                                console.log("brain is undefined !");
+                            } else if (hasBrain) {
+                                console.log(element.name+" already hasBrain !"+brain);
+                            } else {
+                                await chatbot.addBrains(brain);
+                            }
+                            hasBrain = false
+                        });
 
-                    let finalbot = JSON.stringify(await chatbot.getInfos());
-                    console.log('bot ajoute ='+finalbot);
-                    console.log('||');
+                        let finalbot = JSON.stringify(await chatbot.getInfos());
+                        console.log('bot ajoute ='+finalbot);
+                        console.log('||');
+
+                    }else{
+                        console.log('Erreur lors de la création du bot');
+                    }
                 }
 
                 
@@ -269,8 +276,6 @@ router.post('/', async function (req, res, next) {
         chatbotlist = await gest.getAllChatBotsInfos();
 
         res.render('chatbotlist.ejs', { chatbotlist: chatbotlist })
-
-
     }
     
 });
@@ -280,7 +285,7 @@ router.post('/:nom', async function (req, res, next) {
 
     console.log("req = "+JSON.stringify(req.body)+JSON.stringify(req.params))
 
-    //Si il s'agit du première accès à la page de tchat, le bot ne dit rien
+    //Si il s'agit du premier accès à la page de tchat, le bot ne dit rien
     if(req.body.isFirstAccess == 'yes'){
         res.render('chat_box.ejs', { chatbot_name: req.body.name , userLogin: req.body.login, botReply: undefined});
     }
