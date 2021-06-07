@@ -10,7 +10,7 @@ router.get('/chatbots', async function (req, res, next) {
     let gest = Gestionnaire.getInstance();
     chatbots = await gest.getAllChatBotsInfos();
 
-    console.log(chatbots);
+    console.log("chatbots existants :",chatbots);
     res.json(JSON.stringify(chatbots));
 });
 
@@ -18,7 +18,7 @@ router.get('/chatbots', async function (req, res, next) {
 router.post('/creer', loginSanitize, async function (req, res, next) {
     const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
+        next(new Error(errors.errors[0].msg));
 	}
     let gest = Gestionnaire.getInstance();
     réussi = gest.addNewChatBot(req.body.name);
@@ -29,6 +29,7 @@ router.post('/creer', loginSanitize, async function (req, res, next) {
 
     res.json(infos);
     }else{
+        console.log("chatbot non crée, ce nom est déjà pris");
         res.json(JSON.stringify({error: 'Chatbot already exists !'}));
     }
 });
@@ -37,12 +38,13 @@ router.post('/creer', loginSanitize, async function (req, res, next) {
 router.post('/chatbot', loginSanitize, async function (req, res, next) {
     const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
+        next(new Error(errors.errors[0].msg));
 	}
     let gest = Gestionnaire.getInstance();
     var chatbotInfos = await gest.getChatBotInfos(req.body.name);
     var files = gest.getRivescriptFile();
 
+    // vérifie si le fichier existe déjà dans le chatbot avant de le proposer aux ajouts possibles
     var resp = []
     var isin = false;
     for (var i = 0; i < files.length; i++) {
@@ -65,7 +67,7 @@ router.post('/chatbot', loginSanitize, async function (req, res, next) {
 router.put('/addBrain', loginSanitize, async function (req, res, next) {
     const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
+        next(new Error(errors.errors[0].msg));
 	}
 
     console.log("add :", req.body.brain, " to :", req.body.name);
@@ -111,7 +113,7 @@ router.put('/addBrain', loginSanitize, async function (req, res, next) {
 router.delete('/delete', loginSanitize, async function (req, res, next) {
     const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
+        next(new Error(errors.errors[0].msg));
 	}
     console.log("delete : ", req.body.name)
     let gest = Gestionnaire.getInstance();

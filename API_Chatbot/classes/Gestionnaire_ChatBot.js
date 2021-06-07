@@ -13,7 +13,7 @@ class PrivateGestionnaire { // un singleton qui est censé rester le même
         }
         return resp;
     }
-    addNewChatBot(name) { // ajout d'un chatbot
+    addNewChatBot(name) { // ajout d'un chatbot, retourne 0 si réussi, -1 sinon
         var newChatbot = new ChatBot(name);
         console.log("name :",name,newChatbot)
         for(var i = 0; i< this.chatBots.length ; i++){
