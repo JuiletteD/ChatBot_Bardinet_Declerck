@@ -18,16 +18,18 @@ router.get('/', async function (req, res, next) {
 
 /* POST voir les infos login. */
 router.post('/login',loginSanitize, async function (req, res, next) {
+  console.log("in login")
   const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
+    next(new Error(errors.errors[0].msg));
 	}
   const response = await fetch('http://localhost:3000/admin/chatbots');
   const data = await response.json();
   console.log("Chatbots received :" + data);
 
-  res.render('login', { title: 'Chatbot', chatbots: xssFilters.inHTMLData(data), 
-  login: xssFilters.inHTMLData(req.body.login) });
+  console.log("next is rendering : ",req.body.login)
+  res.render('login', { title: 'Chatbot', chatbots: data, 
+login: req.body.login });
 });
 
 module.exports = router;

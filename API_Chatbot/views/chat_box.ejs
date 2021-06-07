@@ -57,17 +57,6 @@
             });
                 
 
-            save2db.addEventListener("click", (e) => {
-                e.preventDefault();
-                postData('http://localhost:3000/chat/', { save2db: true , botname: '<%= chatbot_name %>'})
-                    .then(data => {
-                        console.log("result from bot api = " + data.mongodbstatus)
-                    });
-                    
-
-
-            });
-
             function botReply(message) {  
                 let scrollIsPossible = scrollpossible();
                 var d = new Date(); 
@@ -128,7 +117,6 @@
     </script>
 
 <body onload="init()">
-
     <div class='flex-container'>
 
         <div>
@@ -154,7 +142,6 @@
                 
             </form>
 
-            <button id="save2db" class="btn btn-secondary" type="button">Save data to Base</button>
         </div>
         
 
