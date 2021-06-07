@@ -1,5 +1,6 @@
 # ChatBot_Bardinet_Declerck
 Projet Service Web
+
 Service d’administration de ChatBot utilisant Rivescript
 
 ## Fonctionnalités
@@ -16,8 +17,10 @@ Depuis l'interface d'aministration qui appelle les fonctionnalités de l'API Cha
 
 
 ## Discord
-Creer un bot avec accès à au moins un channel : https://discordjs.guide/
+Creer un bot avec accès à au moins un channel : https://discordjs.guide/.
+
 Entrer le token associé dans l'interface d'administration.
+
 Entrer un prefix si souhaité.
 
 ## Base de donnée Mongodb
@@ -29,15 +32,18 @@ Addresse : localhost:3000
 
 #### Interface administration (interface_admin)
 L'API doit être lancée pour que ce service fontcionne.
+
 Addresse : localhost:1234
 
 #### Lancement
 MacOS or Linux:
-$ DEBUG=myapp:* npm start
+
+> DEBUG=myapp:* npm start
 
 Windows Command Prompt:
 
 > set DEBUG=myapp:* & npm start
 
 Windows PowerShell:
-PS> $env:DEBUG='myapp:*'; npm start
+
+> $env:DEBUG='myapp:*'; npm start
