@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var methodOverride = require('method-override');
+const { Collection } = require('mongoose');
 router.use(methodOverride('_method'));
 const Gestionnaire = require("../classes/Gestionnaire_ChatBot.js");
 const DBGestionnaire = require("../classes/Gestionnaire_DB.js");
@@ -102,7 +103,44 @@ router.post('/', async function (req, res, next) {
             console.log("error :" + e.message);
             res.json(JSON.stringify({ error: e.message }));
         }
-    
+
+    //SAUVEGARDE DANS BDD MONGO
+    } else if (req.body.action == 'local2mongoDB') {
+        try {            
+            //On supprime les données existantes en BDD
+            console.log("ERASING CLOUD DB");
+            gestDB.deleteAll(MongoDBCollection) ; 
+
+            //récupération de données dans le cache de l'api
+            let infos = await gest.getAllChatBotsInfos();
+            console.log("infos collected = " + JSON.stringify(infos));
+            
+            infos.forEach(async(botInfo)=>{
+                console.log("bot demandé = " + botInfo.name);
+
+                let bot4db = {};
+                bot4db.name = botInfo.name;
+                bot4db.brains = botInfo.brains;
+                bot4db.loginInfo = botInfo.loginInfo;
+                bot4db.etatDiscord = botInfo.etatDiscord;
+
+                var chatnot2db = await gestDB.addItem(MongoDBCollection, bot4db);
+                if (!chatnot2db) {
+                    console.log("error! ");
+                    throw new Error('ajout bot echoué');
+                } else {
+                    console.log("bot ajouté");
+                }
+
+            
+            });
+            //verifier si bot dans db
+            
+        } catch (e) {
+            console.log("error :" + e.message);
+            res.json(JSON.stringify({ error: e.message }));
+        }    
+
     
 
     //AFFICHAGE DANS LA CONSOLE DES BOTS DANS LA BDD
@@ -156,7 +194,7 @@ router.post('/', async function (req, res, next) {
             
             console.log('retrieving bots from MongoDB');
             bs.forEach((element,index)=>{
-                console.log('bot n0 '+index+' = '+element);
+                console.log('bot n0 '+index+' = '+JSON.stringify(element));
                 console.log('||')
             })
 
@@ -185,9 +223,6 @@ router.post('/', async function (req, res, next) {
 
                     //AJOUT ETATDISCORD
                     chatbot.etatDiscord = element.etatDiscord;
-                    
-                    let finalbot = JSON.stringify(await chatbot.getInfos())
-                    console.log('bot ajoute ='+finalbot)
 
                     //AJOUT CERVEAUX
                     var hasBrain = false;
@@ -208,6 +243,10 @@ router.post('/', async function (req, res, next) {
                         }
                         hasBrain = false
                     });
+
+                    let finalbot = JSON.stringify(await chatbot.getInfos());
+                    console.log('bot ajoute ='+finalbot);
+                    console.log('||');
                 }
 
                 

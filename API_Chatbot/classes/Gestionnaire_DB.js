@@ -36,7 +36,7 @@ class DBGestionnaire {
 
         var query = { name: botname };
         var bot = await dbo.collection(MongoDBCollection).findOne(query);
-        console.log("joueur selectionné : " + JSON.stringify(bot));
+        console.log("bot selectionné : " + JSON.stringify(bot));
         return bot;
     }
 
@@ -48,7 +48,7 @@ class DBGestionnaire {
         console.log("item supprimé : " + JSON.stringify(item));
         return JSON.stringify(item);
     }
-    
+
     async deleteItemMany(collection, query) {
         let db = await DbConnection.Get();
         var dbo = db.db(DatabaseChatBot);
