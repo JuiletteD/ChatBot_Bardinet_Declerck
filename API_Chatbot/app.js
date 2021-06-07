@@ -1,5 +1,10 @@
 var createError = require('http-errors');
 var express = require('express');
+var cors = require('cors');
+const corsOptions = {
+  origin: true,
+  credentials: true
+}
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -11,6 +16,7 @@ var discordRouter = require('./routes/interface_discord');
 var comRouter = require('./routes/interface_com');
 
 var app = express();
+app.options('*', cors(corsOptions));
 
 // view engine setup
 app.engine('.ejs', require('ejs').__express);
