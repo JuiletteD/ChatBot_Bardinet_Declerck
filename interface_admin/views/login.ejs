@@ -1,0 +1,45 @@
+<%- include("./common/header.ejs"); %>
+
+  <h1 style="text-align: center;">
+    Informations de <%=login%>
+  </h1>
+  <a href="/" class="btn-lg" style="padding: .0rem 0rem;">Retour</a>
+  <main>
+      <%var Chatbots=JSON.parse(chatbots);
+     if(Chatbots.length>0){
+     for (var i=0; i < Chatbots.length; i++) { 
+                var loginInf = null;
+                var j = 0;
+                if(Chatbots[i].loginInfo.length >0){
+                    while(j< Chatbots[i].loginInfo.length && Chatbots[i].loginInfo[j].login !== login){
+                        j = j++;
+                    }
+                    loginInf = Chatbots[i].loginInfo[j];
+                }
+                if(loginInf !== null){
+            %>
+        </br>
+        <div class="card mb-3">
+            <h5 class="card-header ">
+                <%=Chatbots[i].name%>
+            </h5>
+            <div class="card-body text-secondary">
+                <ul class="list-group"></ul>
+                <li class="list-group-item">
+                    Name : <%=Chatbots[i].loginInfo[j].name%>
+                </li>
+                <li class="list-group-item">
+                    Age : <%=Chatbots[i].loginInfo[j].age%>
+                </li>
+                <li class="list-group-item">
+                    Like : <%=Chatbots[i].loginInfo[j].like%>
+                </li>
+                </ul>
+            </div>
+        </div>
+            <%}}}else{%>
+            </br>
+            <h2 class="inred">Pas de chatbot ! </h2> 
+    <%}%>
+  </main>
+  <%- include("./common/footer.ejs"); %>
