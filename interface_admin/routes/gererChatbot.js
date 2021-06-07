@@ -21,7 +21,7 @@ router.post('/creer', loginSanitize, async function (req, res, next) {
 			const data = await response.json();
 			res.render('index', {
 				title: 'Chatbot', chatbots: data,
-				msg: 'Invalid value, only alphanumeric character allowed'
+				msg: 'Invalid value, only alphabetic characters allowed'
 			});
 		} else {
 			next(new Error(errors.errors[0].msg));
