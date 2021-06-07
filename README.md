@@ -28,7 +28,11 @@ Entrer un prefix si souhaité.
 ## Base de donnée Mongodb
 A l'ouverture du service, les données sont chargées depuis la base de donnée en ligne.
 
-On peut en suite la mettre à jour en enregistrant l'état des bots individullement ou en rechargeant tout l'état locale, ce qui permet de tout mettre à jour en une fois, et de supprimer des bots.
+On peut en suite la mettre à jour en enregistrant l'état des bots individullement ou en rechargeant tout l'état local, ce qui permet de tout mettre à jour en une fois, et de supprimer des bots.
+
+## Fichiers Rivescript
+Les fichiers rivescript ajoutables sont ceux présents dans /API_Chatbot/classes/brain, tous les fichier rive de ce dossier peuvent être ajoutés aux bot, le fichier rs-standard.rive est les fichier de ce dossier ajouté par défaut à tous les bots créés.
+
 
 ## Contenu
 #### API Chatbot (API_Chatbot)
