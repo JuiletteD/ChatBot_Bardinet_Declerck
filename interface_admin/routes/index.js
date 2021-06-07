@@ -16,6 +16,29 @@ router.get('/', async function (req, res, next) {
   res.render('index', { title: 'Chatbot', chatbots: data, msg : '' });
 });
 
+/* Met les données en local dans la bdd en ligne */
+router.post('/synchroniser',async function (req, res, next) {
+  const response1 = await fetch('http://localhost:3000/chat', {
+		method: "POST",
+		body: JSON.stringify({
+			action: "local2mongoDB"
+		}),
+		headers: {
+			"Content-type": "application/json",
+		},
+	});
+	const data1 = await response1.text();
+
+ const response = await fetch('http://localhost:3000/admin/chatbots');
+  const data = await response.json();
+  console.log("Chatbots received :" + data);
+
+
+  res.render('index', { title: 'Chatbot', chatbots: data, msg : '' });
+});
+
+
+
 /* POST voir les infos login. */
 router.post('/login',loginSanitize, async function (req, res, next) {
   console.log("in login")
