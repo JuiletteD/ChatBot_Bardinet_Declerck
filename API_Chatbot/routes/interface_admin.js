@@ -21,12 +21,16 @@ router.post('/creer', loginSanitize, async function (req, res, next) {
     throw new Error(errors);
 	}
     let gest = Gestionnaire.getInstance();
-    newchatbot = gest.addNewChatBot(req.body.name);
-    var temp = await newchatbot.getInfos();
-    var infos = JSON.stringify(temp);
+    réussi = gest.addNewChatBot(req.body.name);
+    if(réussi === 0){
+        var temp = await gest.getChatBotInfos(req.body.name);
+        var infos = JSON.stringify(temp);
     console.log("infos de creees :"+infos);
 
     res.json(infos);
+    }else{
+        res.json(JSON.stringify({error: 'Chatbot already exists !'}));
+    }
 });
 
 /* POST acceder chatbot. */

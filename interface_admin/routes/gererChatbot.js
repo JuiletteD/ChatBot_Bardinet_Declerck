@@ -41,9 +41,18 @@ router.post('/creer', loginSanitize, async function (req, res, next) {
 				},
 			});
 			const data = await response.json();
+			if(JSON.parse(data).error !== undefined){
+				const response2 = await fetch('http://localhost:3000/admin/chatbots');
+				const data2 = await response2.json();
+				console.log("Chatbots received :" + data2);
+			  
+				res.render('index', { title: 'Chatbot', chatbots: data2, msg : JSON.parse(data).error });
+
+			}else{
 			console.log("Création nouveau chatbot :" + data);
 
 			res.redirect(302, '/');
+			}
 		}
 	}
 });
