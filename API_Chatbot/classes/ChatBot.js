@@ -29,14 +29,16 @@ class ChatBot {
   addLogin(login) {
     console.log("Ajout de l'utilisateur "+login+" à "+this.name);
     this.login.push(login);
-    this.loginInfo.push({'login':login, 'name': 'unknown', 'age': 0, 'like': 'unknown'});
+    this.loginInfo.push({'login':login, 'name': 'unknown', 'age': -1, 'like': 'unknown'});
   }
+
   async getInfos() {
     await this.getAllUservars();
   
     return { 'name': this.name, 'login': this.login, 'etatDiscord': this.etatDiscord, 'brains': this.brains, 
   'loginInfo': this.loginInfo };
   }
+
   loading_done() {
     console.log("Bot has finished loading!");
 
@@ -98,6 +100,16 @@ class ChatBot {
 
     return {'login':username, 'name': name, 'age': age, 'like': like};
   }
+
+  
+  async setUservars(username,userVars2Add) {
+    this.bot.setUservar(username,'name',userVars2Add.name);
+    this.bot.setUservar(username,'age',userVars2Add.age);
+    this.bot.setUservar(username,'like',userVars2Add.like);
+    console.log('ajout des uservars '+JSON.stringify(userVars2Add)+' à '+username)
+  }
+
+
 
 
   disconnectDiscord(){

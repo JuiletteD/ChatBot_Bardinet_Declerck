@@ -4,39 +4,29 @@
         <title>Chatting With <%= chatbot_name %></title>
         
         <link rel="stylesheet" href="/stylesheets/style.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     </head>
     
     <script>
         function init(){
 
+            
+
             const message_container = document.getElementById('chatbox');
             const chat_container = document.getElementById('chat_container');
             const form = document.getElementById('sendmsg');
             const sendpop = document.getElementById('sendpop');
+            const save2db = document.getElementById('save2db');
             const input_box = document.querySelector('input');
-            //const printbutton = document.getElementById('scrollprint');
-            //const scrollbutton = document.getElementById('autoscroll');
 
             window.post = function (url, data) {
                 return fetch(url, { method: "POST", body: JSON.stringify(data) });
             }
 
-            /*
-            printbutton.addEventListener("click", (e) => {
-                e.preventDefault();
-                console.log("scrollTop message =" + message_container.scrollTop + "  scrollHeight= " + message_container.scrollHeight + " clientHeight = " + message_container.clientHeight);
-                console.log("scrollTop chat =" + chat_container.scrollTop + "  scrollHeight= " + chat_container.scrollHeight + " clientHeight = " + chat_container.clientHeight);
-            });
-
-            scrollbutton.addEventListener("click", (e) => {
-                e.preventDefault();
-                scrolladjust();
-            });
-            */
-
             // Example POST method implementation:
-            async function postData(url = '', data = {}) {
+            async function postData(url = '',data) {
                 // Default options are marked with *
+                console.log('data to be sent : ',data);
                 const response = await fetch(url, {
                     method: 'POST', // *GET, POST, PUT, DELETE, etc.
                     mode: 'cors', // no-cors, *cors, same-origin
@@ -48,15 +38,16 @@
                     },
                     redirect: 'follow', // manual, *follow, error
                     referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-                    body: JSON.stringify({data, userChatting: "<%= userLogin %>", isFirstAccess: "no"}) // body data type must match "Content-Type" header
+                    body: JSON.stringify({data, userChatting: "<%= userLogin %>", isFirstAccess : "no"}) // body data type must match "Content-Type" header
                 });
                 return response.json(); // parses JSON response into native JavaScript objects
             }
 
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
-                selfReply(input_box.value)
-                postData('http://localhost:3000/chat/<%= chatbot_name %>', { message : input_box.value})
+                userMsg = input_box.value;
+                selfReply(userMsg)
+                postData('http://localhost:3000/chat/<%= chatbot_name %>', {userMessage : userMsg})
                     .then(data => {
                         console.log("result data.botReply = " + data.botReply)
                         botReply(data.botReply);
@@ -64,22 +55,33 @@
                 
                 
             });
+                
 
-            sendpop.addEventListener("click", (e) => {
+            save2db.addEventListener("click", (e) => {
                 e.preventDefault();
-                selfReply("pop")
-                postData('http://localhost:3000/chat/<%= chatbot_name %>', { message: input_box.value })
+                postData('http://localhost:3000/chat/', { save2db: true , botname: '<%= chatbot_name %>'})
                     .then(data => {
-                        console.log("result data.botReply = " + data.botReply)
-                        botReply(data.botReply);
+                        console.log("result from bot api = " + data.mongodbstatus)
                     });
+                    
 
 
             });
 
             function botReply(message) {  
-                let scrollIsPossible = scrollpossible();              
-                message_container.innerHTML += `<div class=bot>${message}</div>`;
+                let scrollIsPossible = scrollpossible();
+                var d = new Date(); 
+                let hour = d.getHours()
+                let mints = d.getMinutes()
+                if(mints<10){
+                    mints = '0'+mints.toString();
+                }
+                message_container.innerHTML += `
+                <img src="/images/botpfp.gif" alt="Avatar" class="botimg" width="40" height="40">
+                <div class=bot><b class=topita><%= chatbot_name %></b> - ${hour}h${mints}min</div>
+                <div class=botm>${message}</div>
+                
+                `;
                 if (scrollIsPossible == true) {
                     scrolladjust();
                 }
@@ -88,24 +90,25 @@
             function selfReply(message) {
                 //On regarde si l'utilisateur est en bas de la page de messages
                 let scrollIsPossible = scrollpossible();
-                console.log(scrollIsPossible);
                 //Si il faut scroll, alors on scroll en bas, apres envoie du message
-            
+                var d = new Date(); 
+                let hour = d.getHours()
+                let mints = d.getMinutes()
+                if(mints<10){
+                    mints = '0'+mints.toString();
+                }
 
-                message_container.innerHTML += `<div class=self>${message}</div>`;
+                message_container.innerHTML += `
+                <img src="/images/selfpfp.gif" alt="Avatar" class="selfimg" width="35" height="35">
+                <div class=self><b class=topita>you</b> - ${hour}h${mints}min</div>
+                    <div class=selfm>${message}</div>`;
 
                 if (scrollIsPossible==true) {
                     scrolladjust();
                 }
 
                 input_box.value = '';
-
-                //location.href = '#edge';
-                /*
-                bot.reply("local - user", message).then(function (reply) {
-                    botReply(reply);
-                });
-                */
+                
                 
             }
 
@@ -125,21 +128,38 @@
     </script>
 
 <body onload="init()">
-    <button id="sendpop" type="button">send pop</button>
-    <% if (botReply != undefined) { %>
-    <div id='botReplybox'>
-        <%= botReply %>
-    </div>
-    <% } %>
-    <div id='chat_container' class=chat>
-        <div id=chatbox class=messages></div>
-        <div id=edge></div>
+
+    <div class='flex-container'>
+
+        <div>
+            Vous êtes en communication avec <b> <%= chatbot_name %> </b> !
+            <p></p>
+            
+        </div>
+
         
-        <form id="sendmsg" class="actions" action="/chat/<%= chatbot_name %>" method="POST">
-            <input type=text placeholder="press ‘Enter’ to send…" name="userMessage">
-            <input type="hidden" name="status" value="notFirstAccess" />
-        </form>
+        <div id='chat_container' class=chat>
+    
+            <div id=chatbox class=messages></div>
+    
+        </div>
+
+        <p></p>
+
+        <div class ='form-group'>
+            <form id="sendmsg" action="/chat/<%= chatbot_name %>" method="POST">
+                
+                <input type=text class="form-control" placeholder="press ‘Enter’ to send." name="userMessage">
+                <input type="hidden" name="status" value="notFirstAccess" />
+                
+            </form>
+
+            <button id="save2db" class="btn btn-secondary" type="button">Save data to Base</button>
+        </div>
+        
+
     </div>
+    
 
 </body>
 
