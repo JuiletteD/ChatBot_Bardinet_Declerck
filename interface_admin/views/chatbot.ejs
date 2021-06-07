@@ -13,7 +13,7 @@
               Interface de communication
             </h5>
             </br>
-            <form method="post" action="http://localhost:3000/chat/<%=Jchatbot.name%>" class="card-text">
+            <form method="post" action="http://localhost:3000/chat/<%=Jchatbot.name%>" target="_blank" class="card-text">
               <div class="form-group">
                 <label for="login">Login :</label>
                 <input type="hidden" name="name" value="<%=Jchatbot.name %>">
@@ -101,6 +101,12 @@
 
             </li>
             <li class="list-group-item">
+              <div class="form-group">
+            <button id="save2db" class="btn btn-secondary" type="button">Save data to Base</button>
+              </div>
+            <div id="message"></div>
+          </li>
+            <li class="list-group-item">
               <form method="post" action="/gerer/delete?_method=DELETE" class="card-text">
                 <div class="form-group">
                   <input type="hidden" name="name" value=<%=Jchatbot.name %>>
@@ -111,4 +117,34 @@
         </ul>
       </div>
   </main>
+  <script>
+            // Example POST method implementation:
+            async function postData(url = '',data) {
+                // Default options are marked with *
+                console.log('data to be sent : ',data);
+                const response = await fetch(url, {
+                    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                    mode: 'cors', // no-cors, *cors, same-origin
+                    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                    credentials: 'same-origin', // include, *same-origin, omit
+                    headers: {
+                        'Content-Type': 'application/json'
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    redirect: 'follow', // manual, *follow, error
+                    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                    body: JSON.stringify({data}) // body data type must match "Content-Type" header
+                });
+                return response.json(); // parses JSON response into native JavaScript objects
+            }
+            save2db.addEventListener("click", (e) => {
+                e.preventDefault();
+                postData('http://localhost:3000/chat/', { save2db: true , botname: '<%=Jchatbot.name %>'})
+                    .then(data => {
+                        console.log("result from bot api = " + JSON.parse(data).mongodbstatus);
+                        document.getElementById("message").innerHTML = JSON.parse(data).mongodbstatus+" !";
+                        
+                    });
+            });
+  </script>
   <%- include("./common/footer.ejs"); %>

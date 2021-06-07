@@ -12,6 +12,7 @@
           <div class="form-group">
             <label for="name">Nom du ChatBot :</label>
             <input type="text" class="form-control" name="name" />
+            <p class="inred"><%=msg%></p>
           </div>
           <input type="submit" value="créer" class="btn btn-light">
         </form>
@@ -31,7 +32,7 @@
         <div class="card mb-3">
           <div class="card-body">
             </br>
-            <form method="post" action="/login" class="card-text">
+            <form method="post" class="card-text" action="/login">
               <div class="form-group">
                 <label for="login">Utilisateur :</label>
                 <select name="login" class="form-control">

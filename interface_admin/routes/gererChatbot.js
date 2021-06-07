@@ -4,7 +4,7 @@ var methodOverride = require('method-override');
 
 const { check, validationResult } = require('express-validator');
 var xssFilters = require('xss-filters');
-var loginSanitize = [check('name').trim().escape()];
+var loginSanitize = [check('name').trim().escape().isAlpha()];
 var router = express.Router();
 
 
@@ -12,34 +12,46 @@ var router = express.Router();
 router.use(methodOverride('_method'));
 
 /* POST creer un nouveau ChatBot. */
-router.post('/creer',loginSanitize, async function (req, res, next) {
+router.post('/creer', loginSanitize, async function (req, res, next) {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
-	}
-	if(req.body.name===""){
-		res.redirect(302, '/');
-	}
+		console.log(errors.errors[0].msg)
+		if (errors.errors[0].msg == 'Invalid value') {
+			const response = await fetch('http://localhost:3000/admin/chatbots');
+			const data = await response.json();
+			res.render('index', {
+				title: 'Chatbot', chatbots: data,
+				msg: 'Invalid value, only alphanumeric character allowed'
+			});
+		} else {
+			next(new Error(errors.errors[0].msg));
+		}
+	} else {
+		if (req.body.name === "") {
+			res.redirect(302, '/');
+		} else {
 
-	const response = await fetch('http://localhost:3000/admin/creer', {
-		method: "POST",
-		body: JSON.stringify({
-			name: req.body.name
-		}),
-		headers: {
-			"Content-type": "application/json",
-		},
-	});
-	const data = await response.json();
-	console.log("Création nouveau chatbot :" + data);
+			const response = await fetch('http://localhost:3000/admin/creer', {
+				method: "POST",
+				body: JSON.stringify({
+					name: req.body.name
+				}),
+				headers: {
+					"Content-type": "application/json",
+				},
+			});
+			const data = await response.json();
+			console.log("Création nouveau chatbot :" + data);
 
-	res.redirect(302, '/');
+			res.redirect(302, '/');
+		}
+	}
 });
 /* POST acceder ChatBot. */
-router.post('/chatbot',loginSanitize, async function (req, res, next) {
+router.post('/chatbot', loginSanitize, async function (req, res, next) {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
+		next(new Error(errors.errors[0].msg));
 	}
 
 	const response = await fetch('http://localhost:3000/admin/chatbot', {
@@ -55,15 +67,17 @@ router.post('/chatbot',loginSanitize, async function (req, res, next) {
 	console.log("Acceder au chatbot :" + data);
 	var parsed = JSON.parse(data)
 
-	res.render('chatbot', { title: 'Chatbot', chatbot: xssFilters.inHTMLData(parsed.chatbot),
-	 files: xssFilters.inHTMLData(parsed.files) })
+	res.render('chatbot', {
+		title: 'Chatbot', chatbot: xssFilters.inHTMLData(parsed.chatbot),
+		files: xssFilters.inHTMLData(parsed.files)
+	})
 });
 
 /* POST ajouter cerveau. */
-router.put('/addBrain', loginSanitize,async function (req, res, next) {
+router.put('/addBrain', loginSanitize, async function (req, res, next) {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
+		next(new Error(errors.errors[0].msg));
 	}
 	console.log("Ajout de ", req.body.brain)
 	console.log("Au chatbot ", req.body.name)
@@ -82,15 +96,17 @@ router.put('/addBrain', loginSanitize,async function (req, res, next) {
 	console.log("Ajout cerveau :" + data);
 	var parsed = JSON.parse(data)
 
-	res.render('chatbot', { title: 'Chatbot', chatbot: xssFilters.inHTMLData(parsed.chatbot), 
-	files: xssFilters.inHTMLData(parsed.files) })
+	res.render('chatbot', {
+		title: 'Chatbot', chatbot: xssFilters.inHTMLData(parsed.chatbot),
+		files: xssFilters.inHTMLData(parsed.files)
+	})
 });
 
 /* DELETE supprimer chatbot. */
-router.delete('/delete',loginSanitize, async function (req, res, next) {
+router.delete('/delete', loginSanitize, async function (req, res, next) {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-    throw new Error(errors);
+		next(new Error(errors.errors[0].msg));
 	}
 	console.log("Suppression de :", req.body.name)
 

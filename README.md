@@ -13,7 +13,9 @@ Depuis l'interface d'aministration qui appelle les fonctionnalités de l'API Cha
 - Voir les informations des utilisateurs enregistrées par un bot.
 - Voir les informations d'un utilisateur enregistrées par tous les bots.
 - Supprimer un bot et ses informations utilisateurs et connections avec.
-- Enregistrer les informations des bots dans la base de donnée et les récupérer.
+- Récupérer les informations de la BDD à l'ouverture du service.
+- Enregistrer un bot et ses informations dans la BDD.
+- Mettre à jour toutes les informations de la BDD en ligne à partir de celle en locale.
 
 
 ## Discord
