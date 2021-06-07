@@ -26,7 +26,9 @@ Entrer le token associé dans l'interface d'administration.
 Entrer un prefix si souhaité.
 
 ## Base de donnée Mongodb
+A l'ouverture du service, les données sont chargées depuis la base de donnée en ligne.
 
+On peut en suite la mettre à jour en enregistrant l'état des bots individullement ou en rechargeant tout l'état locale, ce qui permet de tout mettre à jour en une fois, et de supprimer des bots.
 
 ## Contenu
 #### API Chatbot (API_Chatbot)
