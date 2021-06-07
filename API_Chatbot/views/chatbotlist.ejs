@@ -38,24 +38,26 @@
         <p></p>
 
         <form action="/chat" method="post">
-            <input type="hidden" name="action" value="eraseDB" />
-            <input type="submit" value="erase DB" />
-        </form>
-        <form action="/chat" method="post">
-            <input type="hidden" name="action" value="createBot" />
-            <input type="submit" value="create bot" />
-        </form>
-        <form action="/chat" method="post">
-            <input type="hidden" name="action" value="editBot" />
-            <input type="submit" value="edit bot" />
-        </form>
-        <form action="/chat" method="post">
-            <input type="hidden" name="action" value="printBrain" />
-            <input type="submit" value="print brain" />
-        </form>
-        <form action="/chat" method="post">
             <input type="hidden" name="action" value="printAll" />
-            <input type="submit" value="print all brains" />
+            <input type="submit" value="print cloud DB bots" />
+        </form>
+        <form action="/chat" method="post">
+            <input type="hidden" name="action" value="eraseDB" />
+            <input type="submit" value="erase cloud DB" />
+        </form>
+        <p></p>
+        <form action="/chat" method="post">
+            <input type="hidden" name="action" value="printLDB" />
+            <input type="submit" value="print local DB brains" />
+        </form>
+        <form action="/chat" method="post">
+            <input type="hidden" name="action" value="eraseLDB" />
+            <input type="submit" value="erase local db" />
+        </form>
+        <p></p>
+        <form action="/chat" method="post">
+            <input type="hidden" name="action" value="loadBdd" />
+            <input type="submit" value="load cloud dd bots into local bdd" />
         </form>
     </div>
 

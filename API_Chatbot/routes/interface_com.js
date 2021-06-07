@@ -8,6 +8,7 @@ const BotNameLoginVar4DB = require("../classes/models/BotNameLoginVar.js");
 const MongoDBCollection = "chatbot_logins_uservar"
 
 var fs = require('fs');
+const ChatBot = require('../classes/ChatBot.js');
 
 let gestDB = new DBGestionnaire;
 
@@ -42,21 +43,17 @@ router.post('/', async function (req, res, next) {
             res.json(JSON.stringify({ error: e.message }));
         }
 
-    //ENVOIE d'UN BOT EN BDD   
-    } else if (req.body.action == "createBot") {
-        let infos = await gest.getChatBotInfos("nuv");
-        console.log("infos collected = " + JSON.stringify(infos));
-        let bot4db = {};
-        bot4db.name = infos.name;
-        bot4db.loginInfo = infos.loginInfo;
+    //RAZ DE LA LBDD
+    } else if (req.body.action == "eraseLDB") {
+        console.log("ERASING LDB");
         try {
-            var chatnot2db = await gestDB.addItem(MongoDBCollection, bot4db);
-            if (!chatnot2db) {
-                console.log("error! ");
-                throw new Error('MAJ echouee');
-            } else {
-                console.log("data sent");
-            }
+            let cblist = await gest.getAllChatBotsInfos();
+
+            cblist.forEach(async (bot) => {
+                gest.removeChatBot(bot.name);
+            })
+
+            console.log('chatbots removed');
 
         } catch (e) {
             console.log("error :" + e.message);
@@ -82,7 +79,9 @@ router.post('/', async function (req, res, next) {
 
                 let bot4db = {};
                 bot4db.name = infos.name;
+                bot4db.brains = infos.brains;
                 bot4db.loginInfo = infos.loginInfo;
+                bot4db.etatDiscord = infos.etatDiscord;
 
                 var chatnot2db = await gestDB.addItem(MongoDBCollection, bot4db);
                 if (!chatnot2db) {
@@ -106,35 +105,6 @@ router.post('/', async function (req, res, next) {
             console.log("error :" + e.message);
             res.json(JSON.stringify({ error: e.message }));
         }
-
-        
-    //MODIFICATION d"UN BOT     
-    } else if (req.body.action == "editBot") {
-
-        var chatbot = await gestDB.updateItem(MongoDBCollection, { name: "nuv" }, { $set: { loginInfo: [{ "login": "nuvgan" }]  } }, false);
-        if (!chatbot) {
-            console.log("error! ");
-            throw new Error('MAJ echouee');
-        }
-
-    //AFFICHAGE DANS LA CONSOLE DU BOT'NUV'
-    } else if (req.body.action == "printBrain") {
-
-        try {
-            console.log("bot demandé =" + 'nuv');
-    
-            var b = await gestDB.getBot('nuv');
-
-            if (!b) {
-                console.log("error! ");
-                throw new Error('joueur pas trouvÃ© : '+'nuv');
-            }
-
-            console.log('bot.loginInfo ='+JSON.stringify(b.loginInfo));
-            
-        } catch (e) {
-            console.log("error :" + e.message);
-        }
     
     
 
@@ -157,13 +127,98 @@ router.post('/', async function (req, res, next) {
             console.log("error :" + e.message);
         }
 
-    } 
+    //AFFICHAGE DANS LA CONSOLE DES BOTS DANS LA BDD LOCAL
+    } else if (req.body.action == "printLDB") {
+
+        try {
+            console.log("bot LDB demandé =" + 'ALL');
+
+            var bs = await gest.getAllChatBotsInfos();
+
+            console.log('bots ='+JSON.stringify(bs));
+            
+        } catch (e) {
+            console.log("error :" + e.message);
+        }
+
+
+    //LOAD ALL BOTS DANS LA BDD
+    } else if (req.body.action == "loadBdd") {
+
+        try {
+            console.log("bot demandé =" + 'ALL');
+
+            var bs = await gestDB.getAllBots(MongoDBCollection);
+
+            if (!bs) {
+                console.log("error! ");
+                throw new Error('pas de bot en bdd');
+            }
+
+            console.log('bots ='+JSON.stringify(bs));
+
+            bs.forEach(async (element) => {
+
+                //CREATION DU BOT
+                let chatbot = await gest.addNewChatBot(element.name);
+
+                //AJOUT LOGININFO              
+                
+                element.loginInfo.forEach(async (loginInfo1,index) => {
+                    
+                    //PARTIE BOT RIVESCRIPT
+                    //await chatbot.setUservars(loginInfo1.login,{'name':loginInfo1.name,'age':loginInfo1.age,'like':loginInfo1.like});
+                    await chatbot.setUservars(loginInfo1.login,loginInfo1);
+                    
+                    //PARTIE CLASS CHATBOT
+                    chatbot.login.push(loginInfo1.login);
+                    chatbot.loginInfo.push(loginInfo1);
+
+
+                })
+
+                //AJOUT ETATDISCORD
+                chatbot.etatDiscord = element.etatDiscord;
+                
+                let finalbot = JSON.stringify(await chatbot.getInfos())
+                console.log('bot ajoute ='+finalbot)
+
+                //AJOUT CERVEAUX
+                var hasBrain = false;
+
+                element.brains.forEach(async (brain) => {
+                    // on vérifie si le cerveau à ajouter n'existe pas déjà
+                    for (var j = 0; j < chatbot.brains.length; j++) {
+                        if (brain === chatbot.brains[j]) {
+                            hasBrain = true;
+                        }
+                    }
+                    if (brain === undefined) {
+                        console.log("brain is undefined !");
+                    } else if (hasBrain) {
+                        console.log(element.name+" already hasBrain !"+brain);
+                    } else {
+                        await chatbot.addBrains(brain);
+                    }
+                    hasBrain = false
+                })
+                
+            });
+
+
+            
+        } catch (e) {
+            console.log("error :" + e.message);
+        }
+
+    }
+    
+    
     
     //AFFICHAGE DE LA PAGE EJS
     if(req.body.data==undefined) {
 
         chatbotlist = await gest.getAllChatBotsInfos();
-        console.log('chatbotlist =', JSON.stringify(chatbotlist));
 
         res.render('chatbotlist.ejs', { chatbotlist: chatbotlist })
 
